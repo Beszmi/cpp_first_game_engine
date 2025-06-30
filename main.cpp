@@ -1,5 +1,5 @@
 #include "SDL.h"
-#include "game.h"
+#include "game.hpp"
 
 int main(int argc, char *argv[]) {
 	const int fps_max = 120;

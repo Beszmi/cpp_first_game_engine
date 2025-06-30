@@ -1,4 +1,4 @@
-#include "texture_manager.h"
+#include "texture_manager.hpp"
 
 texture_manager::texture_manager(SDL_Renderer* renderer) : renderer(renderer) {}
 

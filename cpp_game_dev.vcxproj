@@ -141,10 +141,10 @@
     <ClCompile Include="texture_manager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="game.h" />
-    <ClInclude Include="SDL_ttf.h" />
-    <ClInclude Include="text.h" />
-    <ClInclude Include="texture_manager.h" />
+    <ClInclude Include="game.hpp" />
+    <ClInclude Include="SDL_ttf.hpp" />
+    <ClInclude Include="text.hpp" />
+    <ClInclude Include="texture_manager.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\Grass_Block.png" />

@@ -1,5 +1,4 @@
-#include "game.h"
-#include "texture_manager.h"
+#include "game.hpp"
 
 SDL_Rect scrR, destR;
 

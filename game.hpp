@@ -6,7 +6,7 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_ttf.h"
-#include "texture_manager.h"
+#include "texture_manager.hpp"
 
 class Game {
 	bool run;

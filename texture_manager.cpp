@@ -1,5 +1,8 @@
 #include "texture_manager.hpp"
 
+#include <filesystem>
+namespace fs = std::filesystem;
+
 texture_manager::texture_manager(SDL_Renderer* renderer) : renderer(renderer) {}
 
 texture_manager::~texture_manager() {
@@ -37,6 +40,18 @@ SDL_Texture* texture_manager::get_texture(const std::string& name) const {
         return it->second;
     }
     return nullptr;
+}
+
+void texture_manager::load_textures_from_folder(const std::string& folder_path) {
+    for (const auto& entry : fs::directory_iterator(folder_path)) {
+        if (entry.path().extension() == ".png" || entry.path().extension() == ".jpg") {
+            if (entry.is_regular_file()) {
+                std::string full_path = entry.path().string();
+                std::string filename = entry.path().stem().string();
+                load_texture(filename, full_path);
+            }
+        }
+    }
 }
 
 void texture_manager::unload_texture(const std::string& name) {

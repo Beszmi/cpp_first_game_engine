@@ -27,7 +27,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		}
 
 		tex_mgr.set_renderer(renderer);
-		tex_mgr.load_texture("mcblock", "assets/Grass_Block.png");
+		tex_mgr.load_textures_from_folder("assets");
 		SDL_Texture* mc_tex = tex_mgr.get_texture("mcblock");
 		if (mc_tex) {
 			SDL_QueryTexture(mc_tex, NULL, NULL, &destR.w, &destR.h);
@@ -62,6 +62,7 @@ void Game::update() {
 void Game::render() {
 	SDL_RenderClear(renderer);
 	SDL_RenderCopy(renderer, tex_mgr.get_texture("mcblock"), NULL, &destR);
+	SDL_RenderCopy(renderer, tex_mgr.get_texture("pngtree"), NULL, &destR);
 	SDL_RenderPresent(renderer);
 }
 

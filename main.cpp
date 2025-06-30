@@ -18,15 +18,6 @@ int main(int argc, char *argv[]) {
 		game1->render();
 
 		frametime = SDL_GetTicks() - framestart;
-		long double sf_frametime;
-		if (frametime == 0) {
-			sf_frametime = 999;
-		}
-		else {
-			sf_frametime = frametime;
-		}
-		long double fps_jelenleg = 1000 / sf_frametime;
-		std::cout << fps_jelenleg << std::endl;
 
 		if (framedelay > frametime) {
 			SDL_Delay(framedelay - frametime);

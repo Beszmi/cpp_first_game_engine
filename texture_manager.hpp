@@ -18,6 +18,7 @@ public:
 
     SDL_Texture* load_texture(const std::string& name, const std::string& filename);
     SDL_Texture* get_texture(const std::string& name) const;
+    void load_textures_from_folder(const std::string& folder_path);
     void set_renderer(SDL_Renderer* rend) { renderer = rend; }
     void unload_texture(const std::string& name);
     void clear();

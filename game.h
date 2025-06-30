@@ -7,6 +7,7 @@
 
 class Game {
 	bool run;
+	int cnt = 0;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 

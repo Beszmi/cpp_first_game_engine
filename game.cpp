@@ -1,9 +1,9 @@
 #include "game.h"
+#include "texture_manager.h"
 
-SDL_Texture* kockatex;
 SDL_Rect scrR, destR;
 
-Game::Game() {
+Game::Game() : tex_mgr(nullptr) {
 
 }
 
@@ -12,10 +12,7 @@ Game::~Game() {
 }
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen) {
-	int flags = 0;
-	if (fullscreen) {
-		flags = SDL_WINDOW_FULLSCREEN;
-	}
+	int flags = fullscreen ? SDL_WINDOW_FULLSCREEN : 0;
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
 		std::cout << "SDL init success!" << std::endl;
@@ -29,14 +26,19 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 			SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
 			std::cout << "renderer created!" << std::endl;
 		}
+
+		tex_mgr.set_renderer(renderer);
+		tex_mgr.load_texture("mcblock", "assets/Grass_Block.png");
+		SDL_Texture* mc_tex = tex_mgr.get_texture("mcblock");
+		if (mc_tex) {
+			SDL_QueryTexture(mc_tex, NULL, NULL, &destR.w, &destR.h);
+		}
+
 		run = true;
 	}
 	else {
 		run = false;
 	}
-	SDL_Surface* tmpSurface = IMG_Load("assets/Grass_Block.png");
-	kockatex = SDL_CreateTextureFromSurface(renderer, tmpSurface);
-	SDL_free(tmpSurface);
 }
 
 void Game::handleEvents() {
@@ -55,19 +57,16 @@ void Game::handleEvents() {
 
 void Game::update() {
 	cnt++;
-	destR.h = 300;
-	destR.w = 300;
 	destR.x = cnt;
 }
 
 void Game::render() {
 	SDL_RenderClear(renderer);
-	SDL_RenderCopy(renderer, kockatex, NULL, &destR);
+	SDL_RenderCopy(renderer, tex_mgr.get_texture("mcblock"), NULL, &destR);
 	SDL_RenderPresent(renderer);
 }
 
 void Game::clean() {
-	SDL_DestroyTexture(kockatex);
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	TTF_Quit();

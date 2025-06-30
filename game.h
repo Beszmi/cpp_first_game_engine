@@ -6,13 +6,14 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_ttf.h"
+#include "texture_manager.h"
 
 class Game {
 	bool run;
 	int cnt = 0;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
-
+	texture_manager tex_mgr;
 public:
 	Game();
 	~Game();

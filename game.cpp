@@ -1,7 +1,5 @@
 #include "game.hpp"
 
-SDL_Rect scrR, destR;
-
 Game::Game() : tex_mgr(nullptr) {
 
 }
@@ -28,10 +26,8 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
 		tex_mgr.set_renderer(renderer);
 		tex_mgr.load_textures_from_folder("assets");
-		SDL_Texture* mc_tex = tex_mgr.get_texture("mcblock");
-		if (mc_tex) {
-			SDL_QueryTexture(mc_tex, NULL, NULL, &destR.w, &destR.h);
-		}
+		obj_container.spawn("mcblock", "mcblock", renderer, tex_mgr);
+		obj_container.spawn("pngtree", renderer, tex_mgr);
 
 		run = true;
 	}
@@ -56,13 +52,23 @@ void Game::handleEvents() {
 
 void Game::update() {
 	cnt++;
-	destR.x = cnt;
+	obj_container.update_all();
 }
 
 void Game::render() {
 	SDL_RenderClear(renderer);
-	SDL_RenderCopy(renderer, tex_mgr.get_texture("mcblock"), NULL, &destR);
-	SDL_RenderCopy(renderer, tex_mgr.get_texture("pngtree"), NULL, &destR);
+	if (auto obj = obj_container.get("mcblock")) {
+		obj->render();
+	}
+	else {
+		std::cerr << "[ERROR] GameObject 'mcblock' not found!\n";
+	}
+	if (auto obj = obj_container.get("pngtree")) {
+		obj->render();
+	}
+	else {
+		std::cerr << "[ERROR] GameObject 'pngtree' not found!\n";
+	}
 	SDL_RenderPresent(renderer);
 }
 

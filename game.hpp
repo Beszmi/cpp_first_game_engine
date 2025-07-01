@@ -7,6 +7,7 @@
 #include "SDL_image.h"
 #include "SDL_ttf.h"
 #include "texture_manager.hpp"
+#include "game_obj.hpp"
 
 class Game {
 	bool run;
@@ -14,6 +15,7 @@ class Game {
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	texture_manager tex_mgr;
+	Game_obj_container obj_container;
 public:
 	Game();
 	~Game();

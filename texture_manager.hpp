@@ -12,6 +12,7 @@ using namespace std;
 class texture_manager {
 	unordered_map<std::string, SDL_Texture*> textures;
 	SDL_Renderer* renderer;
+    SDL_Texture* missing_texture = nullptr;
 public:
     texture_manager(SDL_Renderer* renderer);
     ~texture_manager();

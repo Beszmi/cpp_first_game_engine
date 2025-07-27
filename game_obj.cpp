@@ -15,8 +15,8 @@ GameObject::GameObject(const std::string& name_in, const std::string& texture, S
 void GameObject::update() {
 	dst_rect.x = xpos;
 	dst_rect.y = ypos;
-	dst_rect.w = static_cast<int>(dst_rect.w * 1.01);
-	dst_rect.h = static_cast<int>(dst_rect.h * 1.01);
+	//dst_rect.w = static_cast<int>(dst_rect.w * 1.01);
+	//dst_rect.h = static_cast<int>(dst_rect.h * 1.01);
 }
 
 void GameObject::render() {
@@ -43,7 +43,23 @@ GameObject* Game_obj_container::get(const std::string& name) {
 }
 
 void Game_obj_container::update_all() {
-	for (auto& [_, obj] : objects) obj->update();
+	for (auto& [_, obj] : objects) {
+		int direction_x = rand() % 2;
+		int direction_y = rand() % 2;
+		if (direction_x == 0) {
+			obj->set_x(obj->get_x() - 2);
+		}
+		else {
+			obj->set_x(obj->get_x() + 2);
+		}
+		if (direction_y == 0) {
+			obj->set_y(obj->get_y() - 2);
+		}
+		else {
+			obj->set_y(obj->get_y() + 2);
+		}
+		obj->update();
+	}
 }
 void Game_obj_container::render_all() {
 	for (auto& [_, obj] : objects) obj->render();

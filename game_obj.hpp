@@ -20,7 +20,11 @@ public:
 	GameObject(const std::string& name, const std::string& texture, SDL_Renderer* ren, texture_manager& tex_mgr);
 
 	const std::string& get_name() const { return name; }
+	int get_x() { return xpos; }
+	int get_y() { return ypos; }
 	void set_position(int x, int y) { xpos = x; ypos = y; }
+	void set_x(int x) { xpos = x;}
+	void set_y(int y) { ypos = y; }
 
 	void update();
 	void render();

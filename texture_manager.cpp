@@ -68,3 +68,36 @@ void texture_manager::clear() {
     }
     textures.clear();
 }
+
+tilemap::tilemap(texture_manager* mgr, const string& tileset, int tileW, int tileH, int columns)
+    : tex_mgr(mgr), tileset_name(tileset), tile_width(tileW), tile_height(tileH), tileset_columns(columns) {
+}
+
+void tilemap::set_map(const vector<vector<int>>& map) {
+    map_data = map;
+}
+
+void tilemap::render(SDL_Renderer* renderer, int offset_x, int offset_y) {
+    SDL_Texture* tileset = tex_mgr->get_texture(tileset_name);
+    if (!tileset) return;
+
+    for (size_t row = 0; row < map_data.size(); ++row) {
+        for (size_t col = 0; col < map_data[row].size(); ++col) {
+            int tile_index = map_data[row][col];
+
+            SDL_Rect src_rect;
+            src_rect.x = (tile_index % tileset_columns) * tile_width;
+            src_rect.y = (tile_index / tileset_columns) * tile_height;
+            src_rect.w = tile_width;
+            src_rect.h = tile_height;
+
+            SDL_Rect dst_rect;
+            dst_rect.x = col * tile_width + offset_x;
+            dst_rect.y = row * tile_height + offset_y;
+            dst_rect.w = tile_width;
+            dst_rect.h = tile_height;
+
+            SDL_RenderCopy(renderer, tileset, &src_rect, &dst_rect);
+        }
+    }
+}

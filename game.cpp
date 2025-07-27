@@ -28,6 +28,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		tex_mgr.load_textures_from_folder("assets");
 		obj_container.spawn("mcblock", "mcblock", renderer, tex_mgr);
 		obj_container.spawn("pngtree", renderer, tex_mgr);
+		obj_container.spawn("dirt", renderer, tex_mgr);
 
 		run = true;
 	}

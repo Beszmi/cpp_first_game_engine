@@ -25,6 +25,5 @@ int main(int argc, char *argv[]) {
 	}
 	game1->clean();
 
-	//SDL_Delay(3000);
 	return 0;
 }

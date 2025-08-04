@@ -54,6 +54,10 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		bg->fill_background(screen_w, screen_h, 0);
 		maps.push_back(std::move(bg));
 
+		auto treeMap = std::make_unique<tilemap>(&tex_mgr, "pngtree", 300, 300, 1, 300, 300);
+		treeMap->fill_grid(2, 2, 0);
+		maps.push_back(std::move(treeMap));
+
 		run = true;
 	}
 	else {
@@ -80,7 +84,7 @@ void Game::render() {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
 	if (SDL_GetError()[0] != '\0') {
-		std::cerr << "[SDL] RenderCopy error rendereer eleje: " << SDL_GetError() << "\n";
+		std::cerr << "[SDL] RenderCopy error renderer begin: " << SDL_GetError() << "\n";
 		SDL_ClearError();
 	}
 	for (auto& layer : maps) {

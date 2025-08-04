@@ -10,12 +10,18 @@ int main(int argc, char *argv[]) {
 	Game* game1 = new Game();
 	game1->init("epic game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, false);
 	TTF_Init();
+	vector<vector<int>> data = {
+	{ 0, 1, 2, 3 },
+	{ 4, 5, 6, 7 },
+	{ 8, 9, 10, 11 }
+	};
 
 	while (game1->running()) {
 		framestart = SDL_GetTicks();
 		game1->handleEvents();
 		game1->update();
 		game1->render();
+
 
 		frametime = SDL_GetTicks() - framestart;
 

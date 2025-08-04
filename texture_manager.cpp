@@ -1,4 +1,4 @@
-#include "texture_manager.hpp"
+﻿#include "texture_manager.hpp"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -69,35 +69,100 @@ void texture_manager::clear() {
     textures.clear();
 }
 
-tilemap::tilemap(texture_manager* mgr, const string& tileset, int tileW, int tileH, int columns)
-    : tex_mgr(mgr), tileset_name(tileset), tile_width(tileW), tile_height(tileH), tileset_columns(columns) {
-}
+//tilemaps code
+
+tilemap::tilemap(texture_manager* mgr, const std::string& tileset, int tileW, int tileH, int columns): 
+    tex_mgr(mgr), tileset_name(tileset), tile_width(tileW), tile_height(tileH), tileset_columns(columns), cache_texture(nullptr), cache_width(0), cache_height(0), cache_dirty(true) {}
 
 void tilemap::set_map(const vector<vector<int>>& map) {
     map_data = map;
+    cache_dirty = true;
 }
 
-void tilemap::render(SDL_Renderer* renderer, int offset_x, int offset_y) {
+void tilemap::fill_background(int screen_w, int screen_h, int tile_index) {
+    int cols = (screen_w + tile_width - 1) / tile_width;
+    int rows = (screen_h + tile_height - 1) / tile_height;
+    map_data.assign(rows, std::vector<int>(cols, tile_index));
+    cache_dirty = true;
+}
+
+
+tilemap::~tilemap() {
+    if (cache_texture) {
+        SDL_DestroyTexture(cache_texture);
+    }
+}
+
+void tilemap::rebuild_cache(SDL_Renderer* renderer) {
     SDL_Texture* tileset = tex_mgr->get_texture(tileset_name);
-    if (!tileset) return;
+    if (!tileset) {
+        std::cerr << "[tilemap] Missing tileset: "
+            << tileset_name << "\n";
+        return;
+    }
 
-    for (size_t row = 0; row < map_data.size(); ++row) {
-        for (size_t col = 0; col < map_data[row].size(); ++col) {
-            int tile_index = map_data[row][col];
+    int tex_w, tex_h;
+    SDL_QueryTexture(tileset, nullptr, nullptr, &tex_w, &tex_h);
+    int rows_in_tileset = tex_h / tile_height;
+    int cols_in_tileset = tex_w / tile_width;
+    int max_tiles = rows_in_tileset * cols_in_tileset;
 
-            SDL_Rect src_rect;
-            src_rect.x = (tile_index % tileset_columns) * tile_width;
-            src_rect.y = (tile_index / tileset_columns) * tile_height;
-            src_rect.w = tile_width;
-            src_rect.h = tile_height;
+    int rows = static_cast<int>(map_data.size());
+    int cols = (rows > 0 ? static_cast<int>(map_data[0].size()) : 0);
+    cache_width = cols * tile_width;
+    cache_height = rows * tile_height;
 
-            SDL_Rect dst_rect;
-            dst_rect.x = col * tile_width + offset_x;
-            dst_rect.y = row * tile_height + offset_y;
-            dst_rect.w = tile_width;
-            dst_rect.h = tile_height;
+    if (cache_texture) {
+        SDL_DestroyTexture(cache_texture);
+    }
 
-            SDL_RenderCopy(renderer, tileset, &src_rect, &dst_rect);
+    cache_texture = SDL_CreateTexture(
+        renderer,
+        SDL_PIXELFORMAT_RGBA8888,
+        SDL_TEXTUREACCESS_TARGET,
+        cache_width, cache_height
+    );
+    if (!cache_texture) {
+        std::cerr << "[tilemap] Failed to create cache: "
+            << SDL_GetError() << "\n";
+        return;
+    }
+
+    SDL_SetTextureBlendMode(cache_texture, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderTarget(renderer, cache_texture);
+    SDL_RenderClear(renderer);
+
+    for (int r = 0; r < rows; ++r) {
+        for (int c = 0; c < cols; ++c) {
+            int idx = map_data[r][c];
+            if (idx < 0 || idx >= max_tiles) continue;
+
+            SDL_Rect src{(idx % tileset_columns) * tile_width,(idx / tileset_columns) * tile_height,tile_width,tile_height};
+            SDL_Rect dst{c * tile_width,r * tile_height,tile_width,tile_height
+            };
+            SDL_RenderCopy(renderer, tileset, &src, &dst);
+            if (SDL_GetError()[0] != '\0') {
+                std::cerr << "[SDL] RenderCopy error cache vege: " << SDL_GetError() << "\n";
+                SDL_ClearError();
+            }
         }
+    }
+
+    SDL_SetRenderTarget(renderer, nullptr);
+    cache_dirty = false;
+}
+
+void tilemap::render(SDL_Renderer* renderer, int offset_x, int offset_y){
+    if (cache_dirty) {
+        rebuild_cache(renderer);
+    }
+    if (!cache_texture) return;
+
+    SDL_Rect dst{ offset_x, offset_y,
+                   cache_width, cache_height };
+    SDL_RenderCopy(renderer, cache_texture, nullptr, &dst);
+    if (SDL_GetError()[0] != '\0') {
+        std::cerr << "[SDL] RenderCopy error tilemap render: " << SDL_GetError() << "\n";
+        SDL_ClearError();
     }
 }

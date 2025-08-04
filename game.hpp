@@ -5,9 +5,9 @@
 #include <iostream>
 #include "SDL.h"
 #include "SDL_image.h"
-#include "SDL_ttf.h"
 #include "texture_manager.hpp"
 #include "game_obj.hpp"
+#include "memory.h"
 
 class Game {
 	bool run;
@@ -16,6 +16,8 @@ class Game {
 	SDL_Renderer* renderer;
 	texture_manager tex_mgr;
 	Game_obj_container obj_container;
+	std::vector<std::unique_ptr<tilemap>> maps;
+	int screen_w, screen_h;
 public:
 	Game();
 	~Game();

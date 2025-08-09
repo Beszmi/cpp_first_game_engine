@@ -43,9 +43,9 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 			std::cerr << "[Error] 'dirt' texture not found after loading assets folder.\n";
 		}
 
-		obj_container.spawn("mcblock", "mcblock", renderer, tex_mgr);
-		obj_container.spawn("pngtree", renderer, tex_mgr);
-		obj_container.spawn("dirt", renderer, tex_mgr);
+		obj_container.spawn("mcblock", "mcblock", tex_mgr);
+		obj_container.spawn("pngtree", tex_mgr);
+		obj_container.spawn("dirt", tex_mgr);
 
 		SDL_Texture* dirtTex = tex_mgr.get_texture("dirt");
 		int tex_w, tex_h;
@@ -90,24 +90,26 @@ void Game::render() {
 	for (auto& layer : maps) {
 		layer->render(renderer);
 	}
-	if (auto obj = obj_container.get("mcblock")) {
-		obj->render();
+
+	obj_container.render_all(renderer);
+	/*if (auto obj = obj_container.get("mcblock")) {
+		obj->render(renderer);
 	}
 	else {
 		std::cerr << "[ERROR] GameObject 'mcblock' not found!\n";
 	}
 	if (auto obj = obj_container.get("pngtree")) {
-		obj->render();
+		obj->render(renderer);
 	}
 	else {
 		std::cerr << "[ERROR] GameObject 'pngtree' not found!\n";
 	}
 	if (auto obj = obj_container.get("dirt")) {
-		obj->render();
+		obj->render(renderer);
 	}
 	else {
 		std::cerr << "[ERROR] GameObject 'dirt' not found!\n";
-	}
+	}*/
 
 	SDL_RenderPresent(renderer);
 }

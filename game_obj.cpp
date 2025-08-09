@@ -1,6 +1,6 @@
 #include "game_obj.hpp"
 //named objects
-GameObject::GameObject(const std::string& name, const std::string& texture, texture_manager& tex_mgr): name(name) {
+GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr): name(name) {
 	obj_tex = tex_mgr.get_texture(texture);
 	xpos = 0;
 	ypos = 0;
@@ -17,18 +17,18 @@ void GameObject::update() {
 	//dst_rect.h = static_cast<int>(dst_rect.h * 1.01);
 }
 
-void GameObject::render(SDL_Renderer* ren) {
+void GameObject::render(SDL_Renderer* ren) const {
 	SDL_RenderCopy(ren, obj_tex, &src_rect, &dst_rect);
 }
 
-void Game_obj_container::spawn(const std::string& name, const std::string& texName, texture_manager& tm) {
+void Game_obj_container::spawn(const std::string& name, const std::string& texName, const texture_manager& tm) {
 	objects.emplace(
 		name,
 		std::make_unique<GameObject>(name, texName, tm)
 	);
 }
 
-void Game_obj_container::spawn(const std::string& texName, texture_manager& tm) {
+void Game_obj_container::spawn(const std::string& texName, const texture_manager& tm) {
 	objects.emplace(texName, std::make_unique<GameObject>(texName, texName, tm));
 }
 
@@ -56,6 +56,6 @@ void Game_obj_container::update_all() {
 		obj->update();
 	}
 }
-void Game_obj_container::render_all(SDL_Renderer* ren) {
+void Game_obj_container::render_all(SDL_Renderer* ren) const {
 	for (auto& [_, obj] : objects) obj->render(ren);
 }

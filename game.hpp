@@ -7,7 +7,6 @@
 #include "SDL_image.h"
 #include "texture_manager.hpp"
 #include "game_obj.hpp"
-#include "memory.h"
 #include "tilemap.hpp"
 
 class Game {

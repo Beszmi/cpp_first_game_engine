@@ -22,6 +22,10 @@ void GameObject::render(SDL_Renderer* ren, const Camera& cam) const {
 	SDL_RenderCopy(ren, obj_tex, &src_rect, &camDst);
 }
 
+std::unique_ptr<GameObject> GameObject::clone() const {
+	return std::make_unique<GameObject>(*this);
+}
+
 void Game_obj_container::update_all(double dtSeconds) {
 	for (auto& [_, obj] : objects) {
 		obj->set_position(obj->get_x() + (400 * dtSeconds), obj->get_y() + (400 * dtSeconds));
@@ -30,4 +34,13 @@ void Game_obj_container::update_all(double dtSeconds) {
 }
 void Game_obj_container::render_all(SDL_Renderer* ren, const Camera& cam) const {
 	for (auto& [_, obj] : objects) obj->render(ren, cam);
+}
+
+void GameObject_cluster::add_item(const GameObject& obj_in) {
+	items.push_back(obj_in.clone());
+}
+
+void GameObject_cluster::add_item_zerod(const GameObject& obj_in) {
+	items.push_back(obj_in.clone());
+	items.back()->set_position(0, 0);
 }

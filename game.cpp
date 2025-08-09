@@ -96,6 +96,7 @@ void Game::render() {
 	}
 
 	obj_container.render_all(renderer, cam);
+	obj_container.get("pngtree")->action();
 
 	SDL_RenderPresent(renderer);
 }

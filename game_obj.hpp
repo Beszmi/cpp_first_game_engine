@@ -29,7 +29,8 @@ public:
 	virtual void update();
 	virtual void render(SDL_Renderer* ren, const Camera& cam) const;
 	virtual ~GameObject() = default;
-	virtual void say() {};
+	virtual void action() {};
+	virtual std::unique_ptr<GameObject> clone() const;
 };
 
 class Game_obj_container {
@@ -52,7 +53,6 @@ public:
 		return dynamic_cast<T*>(it->second.get());
 	}
 
-	// Const
 	template<class T = GameObject>
 	const T* get(const std::string& name) const {
 		static_assert(std::is_base_of_v<GameObject, T>,
@@ -68,9 +68,13 @@ public:
 class GameObject_cluster: public GameObject {
 	std::vector<std::unique_ptr<GameObject>> items;
 public:
-	//GameObject_cluster(const std::string& name, const std::string& texture, const texture_manager& tex_mgr);
 	using GameObject::GameObject;
-	void say()  override { std::cout << "test"; }
+
+	void action()  override { std::cout << "test"; }
+
+	void add_item(const GameObject& obj_in);
+	void add_item_zerod(const GameObject& obj_in);
+
 
 	//void update();
 	//void render(SDL_Renderer* ren) const;

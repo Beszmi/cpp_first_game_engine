@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="game_obj.cpp" />
     <ClCompile Include="main.cpp" />
@@ -147,6 +148,7 @@
     <ClCompile Include="tilemap.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camera.hpp" />
     <ClInclude Include="game.hpp" />
     <ClInclude Include="game_obj.hpp" />
     <ClInclude Include="text.hpp" />

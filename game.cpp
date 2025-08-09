@@ -68,16 +68,20 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 void Game::handleEvents() {
 	SDL_Event e;
 	while (SDL_PollEvent(&e)) {
-		switch (e.type) {
-			case SDL_QUIT: run = false; break;
-			default: break;
-			}
+		if (e.type == SDL_QUIT) run = false;
+		if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) run = false;
 	}
+	const Uint8* keys = SDL_GetKeyboardState(nullptr);
+	int pan = 600 / 60;
+	if (keys[SDL_SCANCODE_A]) cam.x -= pan;
+	if (keys[SDL_SCANCODE_D]) cam.x += pan;
+	if (keys[SDL_SCANCODE_W]) cam.y -= pan;
+	if (keys[SDL_SCANCODE_S]) cam.y += pan;
 }
 
-void Game::update() {
+void Game::update(double dtSeconds) {
 	//cnt++;
-	obj_container.update_all();
+	obj_container.update_all(dtSeconds);
 }
 
 void Game::render() {
@@ -88,10 +92,10 @@ void Game::render() {
 		SDL_ClearError();
 	}
 	for (auto& layer : maps) {
-		layer->render(renderer);
+		layer->render(renderer, -cam.x, -cam.y);
 	}
 
-	obj_container.render_all(renderer);
+	obj_container.render_all(renderer, cam);
 
 	SDL_RenderPresent(renderer);
 }

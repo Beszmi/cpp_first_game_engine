@@ -8,6 +8,7 @@
 #include "texture_manager.hpp"
 #include "game_obj.hpp"
 #include "tilemap.hpp"
+#include "camera.hpp"
 
 class Game {
 	bool run;
@@ -18,13 +19,14 @@ class Game {
 	Game_obj_container obj_container;
 	std::vector<std::unique_ptr<tilemap>> maps;
 	int screen_w, screen_h;
+	Camera cam;
 public:
 	Game();
 	~Game();
 
 	void init(const char *title, int xpos, int ypos, int width, int height, bool fullscreen);
 	void handleEvents();
-	void update();
+	void update(double dtSeconds);
 	void render();
 	void clean();
 

@@ -15,16 +15,19 @@ void GameObject::update() {
 	dst_rect.y = ypos;
 }
 
-void GameObject::render(SDL_Renderer* ren) const {
-	SDL_RenderCopy(ren, obj_tex, &src_rect, &dst_rect);
+void GameObject::render(SDL_Renderer* ren, const Camera& cam) const {
+	SDL_Rect camDst = dst_rect;
+	camDst.x -= cam.x;
+	camDst.y -= cam.y;
+	SDL_RenderCopy(ren, obj_tex, &src_rect, &camDst);
 }
 
-void Game_obj_container::update_all() {
+void Game_obj_container::update_all(double dtSeconds) {
 	for (auto& [_, obj] : objects) {
-		obj->set_position(obj->get_x() + 1, obj->get_y() + 1);
+		obj->set_position(obj->get_x() + (400 * dtSeconds), obj->get_y() + (400 * dtSeconds));
 		obj->update();
 	}
 }
-void Game_obj_container::render_all(SDL_Renderer* ren) const {
-	for (auto& [_, obj] : objects) obj->render(ren);
+void Game_obj_container::render_all(SDL_Renderer* ren, const Camera& cam) const {
+	for (auto& [_, obj] : objects) obj->render(ren, cam);
 }

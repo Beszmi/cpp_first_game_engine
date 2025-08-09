@@ -9,6 +9,7 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "texture_manager.hpp"
+#include "camera.hpp"
 
 class GameObject {
 	std::string name;
@@ -26,7 +27,7 @@ public:
 	void set_y(int y) { ypos = y; }
 
 	virtual void update();
-	virtual void render(SDL_Renderer* ren) const;
+	virtual void render(SDL_Renderer* ren, const Camera& cam) const;
 	virtual ~GameObject() = default;
 	virtual void say() {};
 };
@@ -60,12 +61,12 @@ public:
 		if (it == objects.end()) return nullptr;
 		return dynamic_cast<const T*>(it->second.get());
 	}
-	void update_all();
-	void render_all(SDL_Renderer* ren) const;
+	void update_all(double dtSeconds);
+	void render_all(SDL_Renderer* ren, const Camera& cam) const;
 };
 
 class GameObject_cluster: public GameObject {
-	//std::vector<std::unique_ptr<GameObject>> items;
+	std::vector<std::unique_ptr<GameObject>> items;
 public:
 	//GameObject_cluster(const std::string& name, const std::string& texture, const texture_manager& tex_mgr);
 	using GameObject::GameObject;

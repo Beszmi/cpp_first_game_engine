@@ -1,5 +1,4 @@
-
-# cpp_first_game
+# cpp_first_game_engine
 
 Made with SDL 2.32.8 and SDL image 2.8.6
 
@@ -11,4 +10,14 @@ Made with SDL 2.32.8 and SDL image 2.8.6
 - tile maps, for the whole screen and scalable ones too, with texture caching,
 - Timing based updating,
 - Camera with controls,
-- Game objects system,
+- Game objects system
+
+**Features coming soon:**
+- game object made out of multiple separate game objects,
+- controls for in-game objects,
+- camera feature extension
+
+**Features coming later:**
+- Text display support,
+- sprites and animations,
+- collisions

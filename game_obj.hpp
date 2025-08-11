@@ -6,31 +6,72 @@
 #include <unordered_map>
 #include <memory>
 #include <string>
+#include <vector>
 #include "SDL.h"
 #include "SDL_image.h"
 #include "texture_manager.hpp"
 #include "camera.hpp"
+#include <cmath>
+
+//TRANSFORM
+struct Transform {
+	double localX = 0.f, localY = 0.f;
+	double worldX = 0.f, worldY = 0.f;
+	Transform* parent = nullptr;
+	bool dirty = true;
+
+	void setLocal(double x, double y) { localX = x; localY = y; dirty = true; }
+	void setWorld(double x, double y) {
+		if (parent) { setLocal(x - parent->worldX, y - parent->worldY); }
+		else { localX = x; localY = y; dirty = true; }
+	}
+
+	void markDirty() { dirty = true; }
+
+	void computeWorld() {
+		if (!dirty) return;
+		if (parent) {
+			parent->computeWorld();
+			worldX = parent->worldX + localX;
+			worldY = parent->worldY + localY;
+		}
+		else {
+			worldX = localX; worldY = localY;
+		}
+		dirty = false;
+	}
+};
+
+//game objects
 
 class GameObject {
 	std::string name;
-	int xpos, ypos;
+	Transform transform;
 	SDL_Texture* obj_tex;
 	SDL_Rect src_rect, dst_rect;
 public:
 	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr);
+	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y);
+	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn);
+	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn);
+	GameObject(const GameObject& rhs);
 
 	const std::string& get_name() const { return name; }
-	int get_x() const { return xpos; }
-	int get_y() const { return ypos; }
-	void set_position(int x, int y) { xpos = x; ypos = y; }
-	void set_x(int x) { xpos = x;}
-	void set_y(int y) { ypos = y; }
+	double get_world_x() const { return transform.worldX; }
+	double get_world_y() const { return transform.worldY; }
+	Transform* get_transform() { return &transform; }
 
-	virtual void update();
+	void set_loc_position(int x, int y) { transform.setLocal(x, y); }
+	void set_loc_x(int x) { transform.localX = x;}
+	void set_loc_y(int y) { transform.localY = y;}
+	void set_world_pos_force(int x, int y) {transform.worldX= x; transform.worldY = y; }
+
+	virtual void update(double dt);
 	virtual void render(SDL_Renderer* ren, const Camera& cam) const;
 	virtual ~GameObject() = default;
 	virtual void action() {};
 	virtual std::unique_ptr<GameObject> clone() const;
+	SDL_Texture* get_tex();
 };
 
 class Game_obj_container {
@@ -75,9 +116,9 @@ public:
 	void add_item(const GameObject& obj_in);
 	void add_item_zerod(const GameObject& obj_in);
 
-
-	//void update();
-	//void render(SDL_Renderer* ren) const;
+	void update(double dt) override;
+	virtual void render(SDL_Renderer* ren, const Camera& cam) const override;
+	~GameObject_cluster() = default;
 };
 
 #endif

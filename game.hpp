@@ -30,7 +30,7 @@ public:
 	void render();
 	void clean();
 
-	bool running();
+	bool running() const;
 };
 
 

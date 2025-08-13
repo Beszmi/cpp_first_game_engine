@@ -21,7 +21,6 @@ void tilemap::fill_background(int screen_w, int screen_h, int tile_index) {
     cache_dirty = true;
 }
 
-
 tilemap::~tilemap() {
     if (cache_texture) {
         SDL_DestroyTexture(cache_texture);

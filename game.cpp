@@ -43,9 +43,14 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 			std::cerr << "[Error] 'dirt' texture not found after loading assets folder.\n";
 		}
 
-		obj_container.spawn_as<GameObject>("mcblock", "mcblock", tex_mgr);
-		obj_container.spawn_as<GameObject_cluster>("pngtree", "pngtree", tex_mgr);
-		obj_container.spawn_as<GameObject>("dirt", "dirt", tex_mgr);
+		obj_container.spawn_as<GameObject>("mcblock", "mcblock", tex_mgr, true);
+		obj_container.spawn_as<GameObject_cluster>("pngtree", "pngtree", tex_mgr, true);
+		obj_container.spawn_as<GameObject>("dirt", "dirt", tex_mgr, true);
+		obj_container.spawn_as<GameObject>("diamond", "diamond", tex_mgr, true);
+
+		GameObject_cluster& test_obj = *obj_container.get<GameObject_cluster>("pngtree");
+		test_obj.add_item_local(*obj_container.get("dirt"), 50, -40, true);
+		test_obj.add_item_local(*obj_container.get("diamond"), -10, 20, true);
 
 		SDL_Texture* dirtTex = tex_mgr.get_texture("dirt");
 		int tex_w, tex_h;
@@ -54,9 +59,9 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		bg->fill_background(screen_w, screen_h, 0);
 		maps.push_back(std::move(bg));
 
-		auto treeMap = std::make_unique<tilemap>(&tex_mgr, "pngtree", 300, 300, 1, 300, 300);
+		/*auto treeMap = std::make_unique<tilemap>(&tex_mgr, "pngtree", 300, 300, 1, 300, 300);
 		treeMap->fill_grid(2, 2, 0);
-		maps.push_back(std::move(treeMap));
+		maps.push_back(std::move(treeMap));*/
 
 		run = true;
 	}
@@ -109,6 +114,6 @@ void Game::clean() {
 	std::cout << "clean run" << std::endl;
 }
 
-bool Game::running() {
+bool Game::running() const {
 	return run;
 }

@@ -44,34 +44,51 @@ struct Transform {
 
 //game objects
 
+class GameObject_cluster; // for ctors
+
 class GameObject {
 	std::string name;
 	Transform transform;
 	SDL_Texture* obj_tex;
 	SDL_Rect src_rect, dst_rect;
+	bool show;
 public:
-	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr);
-	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y);
-	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn);
-	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn);
+	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, bool show_it = false);
+	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, bool show_it = false);
+	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, bool show_it = false);
+	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, bool show_it = false);
 	GameObject(const GameObject& rhs);
 
 	const std::string& get_name() const { return name; }
 	double get_world_x() const { return transform.worldX; }
 	double get_world_y() const { return transform.worldY; }
+	double get_loc_x() const { return transform.localX; }
+	double get_loc_y() const { return transform.localY; }
 	Transform* get_transform() { return &transform; }
+	const Transform* get_transform() const { return &transform; }
 
-	void set_loc_position(int x, int y) { transform.setLocal(x, y); }
-	void set_loc_x(int x) { transform.localX = x;}
-	void set_loc_y(int y) { transform.localY = y;}
-	void set_world_pos_force(int x, int y) {transform.worldX= x; transform.worldY = y; }
+	void set_loc_position(double x, double y) { transform.setLocal(x, y); }
+	void set_loc_x(double x) { transform.localX = x; transform.dirty = true; }
+	void set_loc_y(double y) { transform.localY = y; transform.dirty = true; }
+	void set_world_pos_force(double x, double y) {transform.worldX= x; transform.worldY = y; }
 
-	virtual void update(double dt);
+	virtual void update(double dt, double speed = 400);
 	virtual void render(SDL_Renderer* ren, const Camera& cam) const;
 	virtual ~GameObject() = default;
 	virtual void action() {};
 	virtual std::unique_ptr<GameObject> clone() const;
+
 	SDL_Texture* get_tex();
+	SDL_Texture* get_tex() const;
+	SDL_Rect& get_src_rect() { return src_rect; }
+	SDL_Rect& get_dst_rect() { return dst_rect; }
+	const SDL_Rect& get_src_rect() const{ return src_rect; }
+	const SDL_Rect& get_dst_rect() const { return dst_rect; }
+	void set_dst_rect(double x, double y);
+
+	bool does_show() { return show; }
+	bool does_show() const { return show; }
+	void set_show(bool v) { show = v; }
 };
 
 class Game_obj_container {
@@ -102,7 +119,7 @@ public:
 		if (it == objects.end()) return nullptr;
 		return dynamic_cast<const T*>(it->second.get());
 	}
-	void update_all(double dtSeconds);
+	void update_all(double dtSeconds, double speed = 400);
 	void render_all(SDL_Renderer* ren, const Camera& cam) const;
 };
 
@@ -111,13 +128,13 @@ class GameObject_cluster: public GameObject {
 public:
 	using GameObject::GameObject;
 
-	void action()  override { std::cout << "test"; }
+	//void action()  override { std::cout << "test"; }
 
-	void add_item(const GameObject& obj_in);
-	void add_item_zerod(const GameObject& obj_in);
+	void add_item_local(const GameObject& obj_in, int lx, int ly, bool show_in_clust = false);
+	void add_item_world(const GameObject& obj_in, bool show_in_clust = false);
 
-	void update(double dt) override;
-	virtual void render(SDL_Renderer* ren, const Camera& cam) const override;
+	void update(double dt, double speed = 400) override;
+	void render(SDL_Renderer* ren, const Camera& cam) const override;
 	~GameObject_cluster() = default;
 };
 

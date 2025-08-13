@@ -5,22 +5,22 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	show = show_it;
 	obj_tex = tex_mgr.get_texture(texture);
 	set_loc_position(0, 0);
-	set_world_pos_force(0, 0);
+	transform.setWorld(0, 0);
 	int w, h;
 	SDL_QueryTexture(obj_tex, nullptr, nullptr, &w, &h);
 	src_rect = { 0, 0, w, h };
-	dst_rect = { 0, 0, w, h };
+	dst_rect = { 0, 0, float(w), float(h) };
 }
 
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, bool show_it) : name(name) {
 	show = show_it;
 	obj_tex = tex_mgr.get_texture(texture);
 	set_loc_position(x, y);
-	set_world_pos_force(x, y);
+	transform.setWorld(x, y);
 	int w, h;
 	SDL_QueryTexture(obj_tex, nullptr, nullptr, &w, &h);
 	src_rect = { 0, 0, w, h };
-	dst_rect = { x, y, w, h };
+	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), float(w), float(h) };
 }
 
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, bool show_it): name(name) {
@@ -33,7 +33,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	SDL_QueryTexture(obj_tex, nullptr, nullptr, &w, &h);
 	transform.computeWorld();
 	src_rect = { 0, 0, w, h };
-	dst_rect = { (int)round(transform.worldX), (int)round(transform.worldY), w, h };
+	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), float(w), float(h) };
 }
 
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, bool show_it): name(name) {
@@ -46,12 +46,12 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	SDL_QueryTexture(obj_tex, nullptr, nullptr, &w, &h);
 	transform.computeWorld();
 	src_rect = { 0, 0, w, h };
-	dst_rect = { (int)round(transform.worldX), (int)round(transform.worldY), w, h};
+	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), float(w), float(h)};
 }
 
 GameObject::GameObject(const GameObject& rhs) : name(rhs.name), obj_tex(rhs.obj_tex), src_rect(rhs.src_rect), dst_rect(rhs.dst_rect), show(rhs.show) {
 	set_loc_position(rhs.transform.localX, rhs.transform.localY);
-	set_world_pos_force(rhs.transform.worldX, rhs.transform.worldY);
+	transform.setWorld(rhs.transform.worldX, rhs.transform.worldY);
 }
 
 void GameObject::set_dst_rect(double x, double y) {
@@ -68,10 +68,10 @@ void GameObject::update(double dt, double speed) {
 
 void GameObject::render(SDL_Renderer* ren, const Camera& cam) const {
 	if (show == true) {
-		SDL_Rect camDst = dst_rect;
+		SDL_FRect camDst = dst_rect;
 		camDst.x -= cam.x;
 		camDst.y -= cam.y;
-		SDL_RenderCopy(ren, obj_tex, &src_rect, &camDst);
+		SDL_RenderCopyF(ren, obj_tex, &src_rect, &camDst);
 	}
 }
 

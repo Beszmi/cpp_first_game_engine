@@ -50,7 +50,8 @@ class GameObject {
 	std::string name;
 	Transform transform;
 	SDL_Texture* obj_tex;
-	SDL_Rect src_rect, dst_rect;
+	SDL_Rect src_rect;
+	SDL_FRect dst_rect;
 	bool show;
 public:
 	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, bool show_it = false);
@@ -70,7 +71,6 @@ public:
 	void set_loc_position(double x, double y) { transform.setLocal(x, y); }
 	void set_loc_x(double x) { transform.localX = x; transform.dirty = true; }
 	void set_loc_y(double y) { transform.localY = y; transform.dirty = true; }
-	void set_world_pos_force(double x, double y) {transform.worldX= x; transform.worldY = y; }
 
 	virtual void update(double dt, double speed = 400);
 	virtual void render(SDL_Renderer* ren, const Camera& cam) const;
@@ -81,9 +81,9 @@ public:
 	SDL_Texture* get_tex();
 	SDL_Texture* get_tex() const;
 	SDL_Rect& get_src_rect() { return src_rect; }
-	SDL_Rect& get_dst_rect() { return dst_rect; }
+	SDL_FRect& get_dst_rect() { return dst_rect; }
 	const SDL_Rect& get_src_rect() const{ return src_rect; }
-	const SDL_Rect& get_dst_rect() const { return dst_rect; }
+	const SDL_FRect& get_dst_rect() const { return dst_rect; }
 	void set_dst_rect(double x, double y);
 
 	bool does_show() { return show; }

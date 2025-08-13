@@ -55,8 +55,8 @@ GameObject::GameObject(const GameObject& rhs) : name(rhs.name), obj_tex(rhs.obj_
 }
 
 void GameObject::set_dst_rect(double x, double y) {
-	dst_rect.x = static_cast<int>(std::lround(x));
-	dst_rect.y = static_cast<int>(std::lround(y));
+	dst_rect.x = static_cast<float>(std::lround(x));
+	dst_rect.y = static_cast<float>(std::lround(y));
 }
 
 void GameObject::update(double dt, double speed) {
@@ -120,12 +120,12 @@ void GameObject_cluster::add_item_world(const GameObject& obj_in, bool show_in_c
 }
 
 void GameObject_cluster::update(double dt, double speed) {
-	//speed = rand() % 400;
+	speed = 150;
 	get_transform()->computeWorld();
 	GameObject::update(dt, speed);
 
 	for (auto& c : items) {
-		c->update(dt, speed);
+		c->update(dt, 0);
 	}
 }
 

@@ -53,11 +53,12 @@ class GameObject {
 	SDL_Rect src_rect;
 	SDL_FRect dst_rect;
 	bool show;
+	float scale;
 public:
-	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, bool show_it = false);
-	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, bool show_it = false);
-	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, bool show_it = false);
-	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, bool show_it = false);
+	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, float scale = 1.0f, bool show_it = false);
+	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, float scale = 1.0f, bool show_it = false);
+	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, float scale = 1.0f, bool show_it = false);
+	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, float scale = 1.0f, bool show_it = false);
 	GameObject(const GameObject& rhs);
 
 	const std::string& get_name() const { return name; }
@@ -82,9 +83,12 @@ public:
 	SDL_Texture* get_tex() const;
 	SDL_Rect& get_src_rect() { return src_rect; }
 	SDL_FRect& get_dst_rect() { return dst_rect; }
-	const SDL_Rect& get_src_rect() const{ return src_rect; }
+	const SDL_Rect& get_src_rect() const { return src_rect; }
 	const SDL_FRect& get_dst_rect() const { return dst_rect; }
 	void set_dst_rect(double x, double y);
+
+	float get_scale() const { return scale; }
+	void set_scale(float scale_in) { scale = scale_in; }
 
 	bool does_show() const { return show; }
 	void set_show(bool v) { show = v; }
@@ -144,6 +148,7 @@ class Button : public GameObject {
 public:
 	using GameObject::GameObject;
 	//void action()  override { std::cout << "test"; }
+	std::unique_ptr<GameObject> clone() const override { return std::make_unique<Button>(*this); }
 
 	void update(double dt, double speed = 400) override;
 	using GameObject::render;

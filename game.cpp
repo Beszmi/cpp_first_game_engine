@@ -74,11 +74,11 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 			std::cerr << "[Error] 'dirt' texture not found after loading assets folder.\n";
 		}
 
-		obj_container.spawn_as<GameObject>("mcblock", "mcblock", tex_mgr, true);
-		obj_container.spawn_as<GameObject_cluster>("pngtree", "pngtree", tex_mgr, true);
-		obj_container.spawn_as<GameObject>("dirt", "dirt", tex_mgr, true);
-		obj_container.spawn_as<GameObject>("diamond", "diamond", tex_mgr, true);
-		obj_container.spawn_as<Button>("diamond-sword", "diamond-sword", tex_mgr, true);
+		obj_container.spawn_as<GameObject>("mcblock", "mcblock", tex_mgr, 1.0f, true);
+		obj_container.spawn_as<GameObject_cluster>("pngtree", "pngtree", tex_mgr, 1.0f, true);
+		obj_container.spawn_as<GameObject>("dirt", "dirt", tex_mgr, 1.0f, true);
+		obj_container.spawn_as<GameObject>("diamond", "diamond", tex_mgr, 1.0f, true);
+		obj_container.spawn_as<Button>("diamond-sword", "diamond-sword", tex_mgr, 0.5, true);
 
 		Button& button_obj = *obj_container.get<Button>("diamond-sword");
 		int temp = button_obj.GameObject::get_dst_rect().w;

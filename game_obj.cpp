@@ -1,7 +1,7 @@
 #include "game_obj.hpp"
 
 //OBJECT
-GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, bool show_it): name(name) {
+GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, float scale, bool show_it): name(name), scale(scale) {
 	show = show_it;
 	obj_tex = tex_mgr.get_texture(texture);
 	if (!obj_tex) { std::cerr << "Texture not found for '" << texture << "'\n"; return; }
@@ -13,7 +13,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	dst_rect = { 0, 0, float(w), float(h) };
 }
 
-GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, bool show_it) : name(name) {
+GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, float scale, bool show_it) : name(name), scale(scale) {
 	show = show_it;
 	obj_tex = tex_mgr.get_texture(texture);
 	if (!obj_tex) { std::cerr << "Texture not found for '" << texture << "'\n"; return; }
@@ -25,7 +25,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), float(w), float(h) };
 }
 
-GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, bool show_it): name(name) {
+GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, float scale, bool show_it): name(name), scale(scale) {
 	show = show_it;
 	obj_tex = tex_mgr.get_texture(texture);
 	if (!obj_tex) { std::cerr << "Texture not found for '" << texture << "'\n"; return; }
@@ -39,7 +39,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), float(w), float(h) };
 }
 
-GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, bool show_it): name(name) {
+GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, float scale, bool show_it): name(name), scale(scale) {
 	show = show_it;
 	obj_tex = tex_mgr.get_texture(texture);
 	if (!obj_tex) { std::cerr << "Texture not found for '" << texture << "'\n"; return; }
@@ -53,7 +53,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), float(w), float(h)};
 }
 
-GameObject::GameObject(const GameObject& rhs) : name(rhs.name), obj_tex(rhs.obj_tex), src_rect(rhs.src_rect), dst_rect(rhs.dst_rect), show(rhs.show) {
+GameObject::GameObject(const GameObject& rhs) : name(rhs.name), obj_tex(rhs.obj_tex), src_rect(rhs.src_rect), dst_rect(rhs.dst_rect), scale(rhs.scale), show(rhs.show) {
 	set_loc_position(rhs.transform.localX, rhs.transform.localY);
 	transform.setWorld(rhs.transform.worldX, rhs.transform.worldY);
 }
@@ -75,6 +75,8 @@ void GameObject::render(SDL_Renderer* ren, const Camera& cam) const {
 		SDL_FRect camDst = dst_rect;
 		camDst.x -= cam.x;
 		camDst.y -= cam.y;
+		camDst.w *= scale;
+		camDst.h *= scale;
 		SDL_RenderCopyF(ren, obj_tex, &src_rect, &camDst);
 	}
 }
@@ -116,8 +118,8 @@ void GameObject_cluster::add_item_world(const GameObject& obj_in, bool show_in_c
 	auto p = obj_in.clone();
 	p->get_transform()->parent = get_transform();
 	this->get_transform()->computeWorld();
-	float lx = obj_in.get_transform()->worldX - this->get_transform()->worldX;
-	float ly = obj_in.get_transform()->worldY - this->get_transform()->worldY;
+	double lx = obj_in.get_transform()->worldX - this->get_transform()->worldX;
+	double ly = obj_in.get_transform()->worldY - this->get_transform()->worldY;
 	p->get_transform()->setLocal(lx, ly);
 	p->set_show(show_in_clust);
 	items.push_back(std::move(p));

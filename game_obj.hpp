@@ -9,38 +9,10 @@
 #include <vector>
 #include "SDL.h"
 #include "SDL_image.h"
-#include "texture_manager.hpp"
-#include "camera.hpp"
+#include "graphic_components/texture_manager.hpp"
+#include "graphic_components/camera.hpp"
+#include "graphic_components/sprites.hpp"
 #include <cmath>
-
-//TRANSFORM
-struct Transform {
-	double localX = 0.f, localY = 0.f;
-	double worldX = 0.f, worldY = 0.f;
-	Transform* parent = nullptr;
-	bool dirty = true;
-
-	void setLocal(double x, double y) { localX = x; localY = y; dirty = true; }
-	void setWorld(double x, double y) {
-		if (parent) { setLocal(x - parent->worldX, y - parent->worldY); }
-		else { localX = x; localY = y; dirty = true; }
-	}
-
-	void markDirty() { dirty = true; }
-
-	void computeWorld() {
-		if (!dirty) return;
-		if (parent) {
-			parent->computeWorld();
-			worldX = parent->worldX + localX;
-			worldY = parent->worldY + localY;
-		}
-		else {
-			worldX = localX; worldY = localY;
-		}
-		dirty = false;
-	}
-};
 
 //game objects
 
@@ -154,6 +126,22 @@ public:
 	using GameObject::render;
 
 	~Button() = default;
+};
+
+//streched bg obj
+
+class streched_bg_obj : public GameObject {
+	strech_bg image;
+public:
+	using GameObject::GameObject;
+	void set_texture(const std::string& texture, const texture_manager& tex_mgr);
+	void set_screen(int screen_w, int screen_h);
+
+	void update(double dt, double speed = 400) override;
+
+	void render(SDL_Renderer* ren, const Camera& cam) const override;
+
+	~streched_bg_obj() = default;
 };
 
 #endif

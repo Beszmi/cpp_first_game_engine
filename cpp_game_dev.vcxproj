@@ -139,21 +139,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="camera.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="game_obj.cpp" />
+    <ClCompile Include="graphic_components\camera.cpp" />
+    <ClCompile Include="graphic_components\sprites.cpp" />
+    <ClCompile Include="graphic_components\texture_manager.cpp" />
+    <ClCompile Include="graphic_components\tilemap.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="text.cpp" />
-    <ClCompile Include="texture_manager.cpp" />
-    <ClCompile Include="tilemap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.hpp" />
     <ClInclude Include="game.hpp" />
     <ClInclude Include="game_obj.hpp" />
+    <ClInclude Include="graphic_components\camera.hpp" />
+    <ClInclude Include="graphic_components\sprites.hpp" />
+    <ClInclude Include="graphic_components\texture_manager.hpp" />
+    <ClInclude Include="graphic_components\tilemap.hpp" />
     <ClInclude Include="text.hpp" />
-    <ClInclude Include="texture_manager.hpp" />
-    <ClInclude Include="tilemap.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\Grass_Block.png" />

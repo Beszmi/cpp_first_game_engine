@@ -1,11 +1,8 @@
 ﻿#include "game.hpp"
 
-Game::Game() : tex_mgr(nullptr), screen_w(0), screen_h(0) {
-}
+Game::Game() : tex_mgr(nullptr), screen_w(0), screen_h(0) {}
 
-Game::~Game() {
-
-}
+Game::~Game() {}
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen) {
 	int flags = fullscreen ? SDL_WINDOW_FULLSCREEN : 0;
@@ -44,9 +41,6 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 			screen_h = usableBounds.h;
 		}
 
-		
-		
-
 		const int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
 		if ((IMG_Init(imgFlags) & imgFlags) != imgFlags) {
 			std::cerr << "IMG_Init failed: " << IMG_GetError() << "\n";
@@ -79,7 +73,12 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		obj_container.spawn_as<GameObject>("dirt", "dirt", tex_mgr, 1.0f, true);
 		obj_container.spawn_as<GameObject>("diamond", "diamond", tex_mgr, 1.0f, true);
 		obj_container.spawn_as<Button>("diamond-sword", "diamond-sword", tex_mgr, 0.5, true);
+		obj_container.spawn_as<streched_bg_obj>("floppa", "floppa", tex_mgr, 1.0f, false);
 
+		streched_bg_obj& floppa = *obj_container.get<streched_bg_obj>("floppa");
+		floppa.set_texture("floppa", tex_mgr);
+		floppa.set_screen(screen_w, screen_h);
+		
 		Button& button_obj = *obj_container.get<Button>("diamond-sword");
 		int temp = button_obj.GameObject::get_dst_rect().w;
 		button_obj.get_transform()->setWorld(screen_w - temp, 0);

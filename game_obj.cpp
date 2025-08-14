@@ -3,8 +3,13 @@
 //OBJECT
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, float scale, bool show_it): name(name), scale(scale) {
 	show = show_it;
-	obj_tex = tex_mgr.get_texture(texture);
-	if (!obj_tex) { std::cerr << "Texture not found for '" << texture << "'\n"; return; }
+	if (texture == "-") {
+		obj_tex = nullptr;
+	}
+	else {
+		obj_tex = tex_mgr.get_texture(texture);
+		if (!obj_tex) { std::cerr << "Texture not found for '" << texture << "'\n"; return; }
+	}
 	set_loc_position(0, 0);
 	transform.setWorld(0, 0);
 	int w, h;
@@ -15,8 +20,13 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, float scale, bool show_it) : name(name), scale(scale) {
 	show = show_it;
-	obj_tex = tex_mgr.get_texture(texture);
-	if (!obj_tex) { std::cerr << "Texture not found for '" << texture << "'\n"; return; }
+	if (texture == "-") {
+		obj_tex = nullptr;
+	}
+	else {
+		obj_tex = tex_mgr.get_texture(texture);
+		if (!obj_tex) { std::cerr << "Texture not found for '" << texture << "'\n"; return; }
+	}
 	set_loc_position(x, y);
 	transform.setWorld(x, y);
 	int w, h;
@@ -27,8 +37,13 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, float scale, bool show_it): name(name), scale(scale) {
 	show = show_it;
-	obj_tex = tex_mgr.get_texture(texture);
-	if (!obj_tex) { std::cerr << "Texture not found for '" << texture << "'\n"; return; }
+	if (texture == "-") {
+		obj_tex = nullptr;
+	}
+	else {
+		obj_tex = tex_mgr.get_texture(texture);
+		if (!obj_tex) { std::cerr << "Texture not found for '" << texture << "'\n"; return; }
+	}
 	transform.parent = prn->get_transform();
 	set_loc_position(0, 0);
 
@@ -41,8 +56,13 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, float scale, bool show_it): name(name), scale(scale) {
 	show = show_it;
-	obj_tex = tex_mgr.get_texture(texture);
-	if (!obj_tex) { std::cerr << "Texture not found for '" << texture << "'\n"; return; }
+	if (texture == "-") {
+		obj_tex = nullptr;
+	}
+	else {
+		obj_tex = tex_mgr.get_texture(texture);
+		if (!obj_tex) { std::cerr << "Texture not found for '" << texture << "'\n"; return; }
+	}
 	transform.parent = prn->get_transform();
 	set_loc_position(x, y);
 
@@ -151,4 +171,24 @@ void GameObject_cluster::render(SDL_Renderer* ren, const Camera& cam) const {
 
 void Button::update(double dt, double speed) {
 	GameObject::update(0.0, 0.0);
+}
+
+//sprite objs
+
+void streched_bg_obj::set_texture(const std::string& texture, const texture_manager& tex_mgr) {
+	image.set_tex(texture, tex_mgr);
+}
+
+void streched_bg_obj::set_screen(int screen_w, int screen_h) {
+	image.set_screen(screen_w, screen_h);
+}
+
+void streched_bg_obj::update(double dt, double speed) {
+	GameObject::update(0.0, 0.0);
+}
+
+void streched_bg_obj::render(SDL_Renderer* ren, const Camera& cam) const {
+	if (does_show()) {
+		image.render(ren);
+	}
 }

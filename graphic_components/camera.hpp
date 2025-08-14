@@ -32,4 +32,33 @@ static inline SDL_Rect roundRect(const SDL_FRect& r) {
     return out;
 }
 
+//TRANSFORM
+struct Transform {
+	double localX = 0.f, localY = 0.f;
+	double worldX = 0.f, worldY = 0.f;
+	Transform* parent = nullptr;
+	bool dirty = true;
+
+	void setLocal(double x, double y) { localX = x; localY = y; dirty = true; }
+	void setWorld(double x, double y) {
+		if (parent) { setLocal(x - parent->worldX, y - parent->worldY); }
+		else { localX = x; localY = y; dirty = true; }
+	}
+
+	void markDirty() { dirty = true; }
+
+	void computeWorld() {
+		if (!dirty) return;
+		if (parent) {
+			parent->computeWorld();
+			worldX = parent->worldX + localX;
+			worldY = parent->worldY + localY;
+		}
+		else {
+			worldX = localX; worldY = localY;
+		}
+		dirty = false;
+	}
+};
+
 #endif

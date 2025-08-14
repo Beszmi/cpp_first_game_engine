@@ -5,10 +5,10 @@
 #include <iostream>
 #include "SDL.h"
 #include "SDL_image.h"
-#include "texture_manager.hpp"
+#include "graphic_components/texture_manager.hpp"
 #include "game_obj.hpp"
-#include "tilemap.hpp"
-#include "camera.hpp"
+#include "graphic_components/tilemap.hpp"
+#include "graphic_components/camera.hpp"
 
 class Game {
 	bool run;

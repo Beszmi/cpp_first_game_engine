@@ -12,9 +12,40 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
 		std::cout << "SDL init success!" << std::endl;
-		window = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
-		screen_w = width;
-		screen_h = height;
+
+		SDL_Rect usableBounds;
+		if (SDL_GetDisplayUsableBounds(0, &usableBounds) != 0) {
+			std::cout << "SDL_GetDisplayUsableBounds Error: " << SDL_GetError() << std::endl;
+			window = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
+		}
+		else {
+			SDL_Window* tempWin = SDL_CreateWindow(
+				"Temp",
+				SDL_WINDOWPOS_UNDEFINED,
+				SDL_WINDOWPOS_UNDEFINED,
+				100, 100,
+				SDL_WINDOW_HIDDEN
+			);
+
+			int topBorder = 0, leftBorder = 0, bottomBorder = 0, rightBorder = 0;
+			if (SDL_GetWindowBordersSize(tempWin, &topBorder, &leftBorder, &bottomBorder, &rightBorder) != 0) {
+				std::cout << "SDL_GetWindowBordersSize Error: " << SDL_GetError() << std::endl;
+				screen_w = width;
+				screen_h = height;
+			}
+			SDL_DestroyWindow(tempWin);
+
+			usableBounds.y += topBorder;
+			usableBounds.h -= topBorder;
+
+			window = SDL_CreateWindow(title, usableBounds.x, usableBounds.y, usableBounds.w, usableBounds.h, flags);
+
+			screen_w = usableBounds.w;
+			screen_h = usableBounds.h;
+		}
+
+		
+		
 
 		const int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
 		if ((IMG_Init(imgFlags) & imgFlags) != imgFlags) {
@@ -47,6 +78,12 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		obj_container.spawn_as<GameObject_cluster>("pngtree", "pngtree", tex_mgr, true);
 		obj_container.spawn_as<GameObject>("dirt", "dirt", tex_mgr, true);
 		obj_container.spawn_as<GameObject>("diamond", "diamond", tex_mgr, true);
+		obj_container.spawn_as<Button>("diamond-sword", "diamond-sword", tex_mgr, true);
+
+		Button& button_obj = *obj_container.get<Button>("diamond-sword");
+		int temp = button_obj.GameObject::get_dst_rect().w;
+		button_obj.get_transform()->setWorld(screen_w - temp, 0);
+		button_obj.get_transform()->computeWorld();
 
 		GameObject_cluster& test_obj = *obj_container.get<GameObject_cluster>("pngtree");
 		test_obj.add_item_local(*obj_container.get("dirt"), 50, -40, true);
@@ -59,9 +96,9 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		bg->fill_background(screen_w, screen_h, 0);
 		maps.push_back(std::move(bg));
 
-		/*auto treeMap = std::make_unique<tilemap>(&tex_mgr, "pngtree", 300, 300, 1, 300, 300);
+		auto treeMap = std::make_unique<tilemap>(&tex_mgr, "pngtree", 300, 300, 1, 300, 300);
 		treeMap->fill_grid(2, 2, 0);
-		maps.push_back(std::move(treeMap));*/
+		maps.push_back(std::move(treeMap));
 
 		run = true;
 	}
@@ -101,7 +138,6 @@ void Game::render() {
 	}
 
 	obj_container.render_all(renderer, cam);
-	obj_container.get("pngtree")->action();
 
 	SDL_RenderPresent(renderer);
 }

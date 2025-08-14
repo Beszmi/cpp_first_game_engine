@@ -6,6 +6,7 @@ int main(int argc, char *argv[]) {
 	const double target_dt = 1.0 / fps_max;
 
 	Game* game1 = new Game();
+
 	game1->init("epic game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, false);
 
 	Uint64 now = SDL_GetPerformanceCounter();

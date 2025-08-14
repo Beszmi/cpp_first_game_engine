@@ -86,7 +86,6 @@ public:
 	const SDL_FRect& get_dst_rect() const { return dst_rect; }
 	void set_dst_rect(double x, double y);
 
-	bool does_show() { return show; }
 	bool does_show() const { return show; }
 	void set_show(bool v) { show = v; }
 };
@@ -136,6 +135,20 @@ public:
 	void update(double dt, double speed = 400) override;
 	void render(SDL_Renderer* ren, const Camera& cam) const override;
 	~GameObject_cluster() = default;
+};
+
+// DERIVED OBJECTS --------------------------------------------------------------------------------------
+
+class Button : public GameObject {
+	bool pressed = false;
+public:
+	using GameObject::GameObject;
+	//void action()  override { std::cout << "test"; }
+
+	void update(double dt, double speed = 400) override;
+	using GameObject::render;
+
+	~Button() = default;
 };
 
 #endif

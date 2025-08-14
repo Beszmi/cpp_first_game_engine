@@ -4,6 +4,7 @@
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, bool show_it): name(name) {
 	show = show_it;
 	obj_tex = tex_mgr.get_texture(texture);
+	if (!obj_tex) { std::cerr << "Texture not found for '" << texture << "'\n"; return; }
 	set_loc_position(0, 0);
 	transform.setWorld(0, 0);
 	int w, h;
@@ -15,6 +16,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, bool show_it) : name(name) {
 	show = show_it;
 	obj_tex = tex_mgr.get_texture(texture);
+	if (!obj_tex) { std::cerr << "Texture not found for '" << texture << "'\n"; return; }
 	set_loc_position(x, y);
 	transform.setWorld(x, y);
 	int w, h;
@@ -26,6 +28,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, bool show_it): name(name) {
 	show = show_it;
 	obj_tex = tex_mgr.get_texture(texture);
+	if (!obj_tex) { std::cerr << "Texture not found for '" << texture << "'\n"; return; }
 	transform.parent = prn->get_transform();
 	set_loc_position(0, 0);
 
@@ -39,6 +42,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, bool show_it): name(name) {
 	show = show_it;
 	obj_tex = tex_mgr.get_texture(texture);
+	if (!obj_tex) { std::cerr << "Texture not found for '" << texture << "'\n"; return; }
 	transform.parent = prn->get_transform();
 	set_loc_position(x, y);
 
@@ -62,8 +66,8 @@ void GameObject::set_dst_rect(double x, double y) {
 void GameObject::update(double dt, double speed) {
 	set_loc_position(transform.localX + (speed * dt), transform.localY + (speed * dt));
 	transform.computeWorld();
-	dst_rect.x = static_cast<int>(std::lround(transform.worldX));
-	dst_rect.y = static_cast<int>(std::lround(transform.worldY));
+	dst_rect.x = static_cast<float>(std::lround(transform.worldX));
+	dst_rect.y = static_cast<float>(std::lround(transform.worldY));
 }
 
 void GameObject::render(SDL_Renderer* ren, const Camera& cam) const {
@@ -141,4 +145,8 @@ void GameObject_cluster::render(SDL_Renderer* ren, const Camera& cam) const {
 	for (auto& c : items) {
 		c->render(ren, cam);
 	}
+}
+
+void Button::update(double dt, double speed) {
+	GameObject::update(0.0, 0.0);
 }

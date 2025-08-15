@@ -3,7 +3,7 @@
 //OBJECT
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, float scale, bool show_it): name(name), scale(scale) {
 	show = show_it;
-	if (texture == "-") {
+	if (&texture.at(0) == "-") {
 		obj_tex = nullptr;
 	}
 	else {
@@ -20,7 +20,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, float scale, bool show_it) : name(name), scale(scale) {
 	show = show_it;
-	if (texture == "-") {
+	if (&texture.at(0) == "-") {
 		obj_tex = nullptr;
 	}
 	else {
@@ -37,7 +37,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, float scale, bool show_it): name(name), scale(scale) {
 	show = show_it;
-	if (texture == "-") {
+	if (&texture.at(0) == "-") {
 		obj_tex = nullptr;
 	}
 	else {
@@ -56,7 +56,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, float scale, bool show_it): name(name), scale(scale) {
 	show = show_it;
-	if (texture == "-") {
+	if (&texture.at(0) == "-") {
 		obj_tex = nullptr;
 	}
 	else {
@@ -183,6 +183,11 @@ void streched_bg_obj::set_screen(int screen_w, int screen_h) {
 	image.set_screen(screen_w, screen_h);
 }
 
+void streched_bg_obj::init(const std::string& texture, const texture_manager& tex_mgr, int screen_w, int screen_h) {
+	image.set_tex(texture, tex_mgr);
+	image.set_screen(screen_w, screen_h);
+}
+
 void streched_bg_obj::update(double dt, double speed) {
 	GameObject::update(0.0, 0.0);
 }
@@ -190,5 +195,81 @@ void streched_bg_obj::update(double dt, double speed) {
 void streched_bg_obj::render(SDL_Renderer* ren, const Camera& cam) const {
 	if (does_show()) {
 		image.render(ren);
+	}
+}
+
+//sprite ------------------------------------------------------------
+
+void sprite::add_element(const std::string& texture, const texture_manager& tex_mgr) {
+	auto p = std::make_unique<sprite_component>(texture, tex_mgr);
+	elements.push_back(std::move(p));
+}
+
+void sprite::add_elements_batch(const std::string& name) {
+
+}
+
+std::unique_ptr<sprite_component>& sprite::get_element(size_t idx) {
+	return elements.at(idx);
+}
+
+size_t sprite::get_current_idx() const {
+	return current_element;
+	}
+
+void sprite::set_current_idx(size_t idx) {
+	if (idx > 1000000000) {
+		current_element = elements.size()-1;
+	} else if (idx >= elements.size()) {
+		current_element = 0;
+	} else {
+		current_element = idx;
+		}
+}
+ 
+
+void sprite::update(double dt, double speed) {
+	t = t + dt;
+	if (t >= 1) {
+		switch (state)
+		{
+		case 0:
+			GameObject::update(0.0, 0.0);
+			break;
+		case 1:
+			set_current_idx(++current_element);
+			GameObject::update(0.0, 0.0);
+			break;
+		case -1:
+			set_current_idx(current_element - 1);
+			GameObject::update(0.0, 0.0);
+			break;
+		case 2:
+			GameObject::update(0.0, 0.0);
+			break;
+		case -2:
+			GameObject::update(0.0, 0.0);
+			break;
+
+		default:
+			GameObject::update(0.0, 0.0);
+			break;
+		}
+		t = 0;
+	}
+	
+}
+
+void sprite::render(SDL_Renderer* ren, const Camera& cam) const {
+	if (does_show()) {
+		if (current_element >= elements.size()) {
+			std::cout << "sprite currently rendering id too large" << std::endl;
+		}
+		else if (current_element < 0) {
+			std::cout << "sprite currently rendering id too small" << std::endl;
+		}
+		else {
+			elements.at(current_element)->render(ren, &get_src_rect(), &get_dst_rect());
+		}
 	}
 }

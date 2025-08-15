@@ -63,6 +63,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
 		tex_mgr.set_renderer(renderer);
 		tex_mgr.load_textures_from_folder("assets");
+		tex_mgr.load_textures_from_folder("assets/sprites");
 
 		if (!tex_mgr.get_texture("dirt")) {
 			std::cerr << "[Error] 'dirt' texture not found after loading assets folder.\n";
@@ -73,11 +74,23 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		obj_container.spawn_as<GameObject>("dirt", "dirt", tex_mgr, 1.0f, true);
 		obj_container.spawn_as<GameObject>("diamond", "diamond", tex_mgr, 1.0f, true);
 		obj_container.spawn_as<Button>("diamond-sword", "diamond-sword", tex_mgr, 0.5, true);
-		obj_container.spawn_as<streched_bg_obj>("floppa", "floppa", tex_mgr, 1.0f, false);
+		obj_container.spawn_as<streched_bg_obj>("-", "-", tex_mgr, 1.0f, false);
+		obj_container.spawn_as<GameObject>("sussy", "sussy", tex_mgr, 1.0f, true);
+		obj_container.spawn_as<sprite>("s1", "s1", tex_mgr, 1.0f, true);
 
-		streched_bg_obj& floppa = *obj_container.get<streched_bg_obj>("floppa");
-		floppa.set_texture("floppa", tex_mgr);
-		floppa.set_screen(screen_w, screen_h);
+		sprite& cocacola = *obj_container.get<sprite>("s1");
+		cocacola.add_element("s1", tex_mgr);
+		cocacola.add_element("s2", tex_mgr);
+		cocacola.add_element("s3", tex_mgr);
+		cocacola.add_element("s4", tex_mgr);
+		cocacola.add_element("s5", tex_mgr);
+		cocacola.add_element("s6", tex_mgr);
+		cocacola.add_element("s7", tex_mgr);
+		cocacola.add_element("s8", tex_mgr);
+		cocacola.add_element("s9", tex_mgr);
+
+		streched_bg_obj& floppa = *obj_container.get<streched_bg_obj>("-");
+		floppa.init("floppa", tex_mgr, screen_w, screen_h);
 		
 		Button& button_obj = *obj_container.get<Button>("diamond-sword");
 		int temp = button_obj.GameObject::get_dst_rect().w;

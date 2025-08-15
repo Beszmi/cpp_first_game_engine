@@ -136,12 +136,38 @@ public:
 	using GameObject::GameObject;
 	void set_texture(const std::string& texture, const texture_manager& tex_mgr);
 	void set_screen(int screen_w, int screen_h);
+	void init(const std::string& texture, const texture_manager& tex_mgr, int screen_w, int screen_h);
 
 	void update(double dt, double speed = 400) override;
 
 	void render(SDL_Renderer* ren, const Camera& cam) const override;
 
 	~streched_bg_obj() = default;
+};
+
+//sprite object
+
+class sprite : public GameObject {
+	std::vector<std::unique_ptr<sprite_component>> elements;
+	int state = -1; //states in docs
+	size_t current_element = 0;
+	double t = 0;
+public:
+	using GameObject::GameObject;
+
+	void add_element(const std::string& texture, const texture_manager& tex_mgr);
+	void add_elements_batch(const std::string& name);
+	std::unique_ptr<sprite_component>& get_element(size_t idx);
+
+	int get_state() const { return state; }
+	void set_state(int new_State) { state = new_State; }
+
+	size_t get_current_idx() const;
+	void set_current_idx(size_t idx);
+
+	void update(double dt, double speed = 1) override;
+
+	void render(SDL_Renderer* ren, const Camera& cam) const override;
 };
 
 #endif

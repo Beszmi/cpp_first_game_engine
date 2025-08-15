@@ -12,14 +12,16 @@ Made with SDL 2.32.8 and SDL image 2.8.6
 - Camera with controls,
 - Game objects system
 - game object made out of multiple separate game objects,
+- sprites and animations
 
 **Features coming soon:**
 
 - controls for in-game objects,
 - camera feature extension
-- sprites and animations,
 
 **Features coming later:**
 - Text display support,
 - move to SDL3
 - collisions
+
+**Please note that all the assets in the project are just copyright free place holders!**

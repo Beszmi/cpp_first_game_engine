@@ -15,6 +15,7 @@ public:
 	sprite_component();
 	sprite_component(const std::string& texture, const texture_manager& tex_mgr);
 	virtual void render(SDL_Renderer* ren, const SDL_Rect* src_rect, const SDL_Rect* dst_rect) const;
+	virtual void render(SDL_Renderer* ren, const SDL_Rect* src_rect, const SDL_FRect* dst_rect) const;
 	SDL_Texture* get_tex() { return obj_tex; }
 	void set_tex(const std::string& texture, const texture_manager& tex_mgr);
 	virtual ~sprite_component() {}

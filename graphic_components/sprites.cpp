@@ -17,6 +17,10 @@ void sprite_component::render(SDL_Renderer* ren, const SDL_Rect* src_rect, const
 	SDL_RenderCopy(ren, obj_tex, src_rect, dst_rect);
 }
 
+void sprite_component::render(SDL_Renderer* ren, const SDL_Rect* src_rect, const SDL_FRect* dst_rect) const {
+	SDL_RenderCopyF(ren, obj_tex, src_rect, dst_rect);
+}
+
 strech_bg::strech_bg() {
 	src_rect = { 0, 0, 0, 0 };
 	screen = { 0, 0, 0, 0 };

@@ -5,9 +5,7 @@ namespace fs = std::filesystem;
 
 texture_manager::texture_manager(SDL_Renderer* renderer) : renderer(renderer) {}
 
-texture_manager::~texture_manager() {
-	clear();
-}
+texture_manager::~texture_manager() { clear(); }
 
 SDL_Texture* texture_manager::load_texture(const std::string& name, const std::string& filename) {
     if (textures.find(name) != textures.end()) {

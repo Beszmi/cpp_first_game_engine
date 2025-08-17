@@ -14,8 +14,8 @@ class sprite_component {
 public:
 	sprite_component();
 	sprite_component(const std::string& texture, const texture_manager& tex_mgr);
-	virtual void render(SDL_Renderer* ren, const SDL_Rect* src_rect, const SDL_Rect* dst_rect) const;
-	virtual void render(SDL_Renderer* ren, const SDL_Rect* src_rect, const SDL_FRect* dst_rect) const;
+	virtual void render(SDL_Renderer* ren, const SDL_Rect* src_rect, const SDL_Rect* dst_rect, const Camera& cam) const;
+	virtual void render(SDL_Renderer* ren, const SDL_Rect* src_rect, const SDL_FRect* dst_rect, const Camera& cam, double scale) const;
 	SDL_Texture* get_tex() { return obj_tex; }
 	void set_tex(const std::string& texture, const texture_manager& tex_mgr);
 	virtual ~sprite_component() {}
@@ -28,7 +28,7 @@ public:
 	strech_bg();
 	strech_bg(const std::string& texture, const texture_manager& tex_mgr, int screen_w, int screen_h);
 	void set_screen(int screen_w, int screen_h);
-	void render(SDL_Renderer* ren) const;
+	void render(SDL_Renderer* ren, const Camera& cam) const;
 	using sprite_component::get_tex;
 	using sprite_component::set_tex;
 	~strech_bg() {}

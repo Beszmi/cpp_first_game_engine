@@ -12,7 +12,7 @@
 
 class Game {
 	bool run;
-	int cnt = 0;
+	//int cnt = 0;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	texture_manager tex_mgr;

@@ -13,12 +13,17 @@ void sprite_component::set_tex(const std::string& texture, const texture_manager
 
 }
 
-void sprite_component::render(SDL_Renderer* ren, const SDL_Rect* src_rect, const SDL_Rect* dst_rect) const {
+void sprite_component::render(SDL_Renderer* ren, const SDL_Rect* src_rect, const SDL_Rect* dst_rect, const Camera& cam) const { // no camera movement
 	SDL_RenderCopy(ren, obj_tex, src_rect, dst_rect);
 }
 
-void sprite_component::render(SDL_Renderer* ren, const SDL_Rect* src_rect, const SDL_FRect* dst_rect) const {
-	SDL_RenderCopyF(ren, obj_tex, src_rect, dst_rect);
+void sprite_component::render(SDL_Renderer* ren, const SDL_Rect* src_rect, const SDL_FRect* dst_rect, const Camera& cam, double scale) const {
+	SDL_FRect camDst = *dst_rect;
+	camDst.x -= cam.x;
+	camDst.y -= cam.y;
+	camDst.w *= scale;
+	camDst.h *= scale;
+	SDL_RenderCopyF(ren, obj_tex, src_rect, &camDst);
 }
 
 strech_bg::strech_bg() {
@@ -41,6 +46,6 @@ void strech_bg::set_screen(int screen_w, int screen_h) {
 	screen = { 0, 0, screen_w, screen_h };
 }
 
-void strech_bg::render(SDL_Renderer* ren) const {
-	sprite_component::render(ren, &src_rect, &screen);
+void strech_bg::render(SDL_Renderer* ren, const Camera& cam) const {
+	sprite_component::render(ren, &src_rect, &screen, cam);
 }

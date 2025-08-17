@@ -1,6 +1,6 @@
 #include "game_obj.hpp"
 
-//OBJECT
+//BASE OBJECT
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, float scale, bool show_it): name(name), scale(scale) {
 	show = show_it;
 	if (&texture.at(0) == "-") {
@@ -194,7 +194,7 @@ void streched_bg_obj::update(double dt, double speed) {
 
 void streched_bg_obj::render(SDL_Renderer* ren, const Camera& cam) const {
 	if (does_show()) {
-		image.render(ren);
+		image.render(ren, cam);
 	}
 }
 
@@ -230,7 +230,7 @@ void sprite::set_current_idx(size_t idx) {
 
 void sprite::update(double dt, double speed) {
 	t = t + dt;
-	if (t >= 1) {
+	if (t >= 0.25) {
 		switch (state)
 		{
 		case 0:
@@ -269,7 +269,7 @@ void sprite::render(SDL_Renderer* ren, const Camera& cam) const {
 			std::cout << "sprite currently rendering id too small" << std::endl;
 		}
 		else {
-			elements.at(current_element)->render(ren, &get_src_rect(), &get_dst_rect());
+			elements.at(current_element)->render(ren, &get_src_rect(), &get_dst_rect(), cam, 1.0f);
 		}
 	}
 }

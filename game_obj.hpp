@@ -98,6 +98,8 @@ public:
 	void render_all(SDL_Renderer* ren, const Camera& cam) const;
 };
 
+//Game object cluster -----------------------------------------------------------------------------------
+
 class GameObject_cluster: public GameObject {
 	std::vector<std::unique_ptr<GameObject>> items;
 public:
@@ -149,7 +151,7 @@ public:
 
 class sprite : public GameObject {
 	std::vector<std::unique_ptr<sprite_component>> elements;
-	int state = -1; //states in docs
+	int state = 1; //states in docs
 	size_t current_element = 0;
 	double t = 0;
 public:

@@ -204,9 +204,7 @@ void sprite::add_element(const std::string& texture, const texture_manager& tex_
 	elements.push_back(std::move(p));
 }
 
-void sprite::add_elements_batch(const std::string& name) {
-
-}
+//void sprite::add_elements_batch(const std::string& name) {}
 
 std::unique_ptr<sprite_component>& sprite::get_element(size_t idx) {
 	return elements.at(idx);

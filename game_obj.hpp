@@ -158,7 +158,7 @@ public:
 	using GameObject::GameObject;
 
 	void add_element(const std::string& texture, const texture_manager& tex_mgr);
-	void add_elements_batch(const std::string& name);
+	//void add_elements_batch(const std::string& name);
 	std::unique_ptr<sprite_component>& get_element(size_t idx);
 
 	int get_state() const { return state; }

@@ -8,8 +8,10 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
-using namespace std;
+#include <filesystem>
+#include <algorithm>
 
+using namespace std;
 
 class texture_manager {
 	unordered_map<string, SDL_Texture*> textures;
@@ -19,6 +21,8 @@ public:
     texture_manager(SDL_Renderer* renderer);
     ~texture_manager();
 
+    auto find_iter_by_name(const std::string& name) -> decltype(textures)::iterator;
+    auto find_iter_by_name(const std::string& name) const -> decltype(textures)::const_iterator;
     SDL_Texture* load_texture(const string& name, const string& filename);
     SDL_Texture* get_texture(const string& name) const;
     void load_textures_from_folder(const string& folder_path);

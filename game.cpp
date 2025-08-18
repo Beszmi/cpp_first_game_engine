@@ -79,15 +79,15 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		obj_container.spawn_as<sprite>("s1", "s1", tex_mgr, 1.0f, true);
 
 		sprite& cocacola = *obj_container.get<sprite>("s1");
-		cocacola.add_element("s1", tex_mgr);
-		cocacola.add_element("s2", tex_mgr);
-		cocacola.add_element("s3", tex_mgr);
-		cocacola.add_element("s4", tex_mgr);
-		cocacola.add_element("s5", tex_mgr);
-		cocacola.add_element("s6", tex_mgr);
-		cocacola.add_element("s7", tex_mgr);
-		cocacola.add_element("s8", tex_mgr);
-		cocacola.add_element("s9", tex_mgr);
+		cocacola.add_element("sprites/s1", tex_mgr);
+		cocacola.add_element("sprites/s2", tex_mgr);
+		cocacola.add_element("sprites/s3", tex_mgr);
+		cocacola.add_element("sprites/s4", tex_mgr);
+		cocacola.add_element("sprites/s5", tex_mgr);
+		cocacola.add_element("sprites/s6", tex_mgr);
+		cocacola.add_element("sprites/s7", tex_mgr);
+		cocacola.add_element("sprites/s8", tex_mgr);
+		cocacola.add_element("sprites/s9", tex_mgr);
 
 		streched_bg_obj& floppa = *obj_container.get<streched_bg_obj>("-");
 		floppa.init("floppa", tex_mgr, screen_w, screen_h);

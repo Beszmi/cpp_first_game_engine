@@ -4,13 +4,11 @@
 #include <iostream>
 #include "SDL.h"
 #include "SDL_image.h"
-#include "SDL_ttf.h"
 #include <unordered_map>
 #include <vector>
 #include <string>
 #include <filesystem>
 #include <algorithm>
-
 using namespace std;
 
 class texture_manager {

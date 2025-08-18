@@ -2,7 +2,6 @@
 #ifndef tilemap_h
 #define tilemap_h
 #include "texture_manager.hpp"
-using namespace std;
 
 class tilemap {
     int tile_width, tile_height;

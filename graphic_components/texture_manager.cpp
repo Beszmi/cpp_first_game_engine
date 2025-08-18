@@ -130,8 +130,7 @@ void texture_manager::unload_texture(const std::string& name) {
 }
 
 bool texture_manager::has(const string& name) {
-    auto it = textures.find(name);
-    return (it != textures.end()) ? true : false;
+    return textures.find(name) != textures.end();
 }
 
 void texture_manager::clear() {

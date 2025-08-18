@@ -152,7 +152,7 @@ public:
 class sprite : public GameObject {
 	std::vector<std::unique_ptr<sprite_component>> elements;
 	int state = 1; //states in docs
-	size_t current_element = 0;
+	int current_element = 0;
 	double t = 0;
 public:
 	using GameObject::GameObject;
@@ -164,8 +164,8 @@ public:
 	int get_state() const { return state; }
 	void set_state(int new_State) { state = new_State; }
 
-	size_t get_current_idx() const;
-	void set_current_idx(size_t idx);
+	size_t get_current_idx() const { return static_cast<size_t>(current_element); }
+	void set_current_idx(int idx);
 
 	void update(double dt, double speed = 1) override;
 

@@ -1,4 +1,5 @@
 #include "tilemap.hpp"
+using namespace std;
 
 tilemap::tilemap(texture_manager* mgr, const std::string& tileset, int tileW, int tileH, int columns, int drawW, int drawH) :
     tex_mgr(mgr), tileset_name(tileset), tile_width(tileW), tile_height(tileH), tileset_columns(columns), cache_texture(nullptr), cache_width(0), cache_height(0),

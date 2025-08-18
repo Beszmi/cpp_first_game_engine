@@ -2,7 +2,7 @@
 
 Game::Game() : tex_mgr(nullptr), screen_w(0), screen_h(0) {}
 
-Game::~Game() {}
+Game::~Game() { clean(); }
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen) {
 	int flags = fullscreen ? SDL_WINDOW_FULLSCREEN : 0;
@@ -50,7 +50,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 			std::cout << "Window created!" << std::endl;
 		}
 
-		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED |SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE);
+		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
 		if (renderer) {
 			std::cout << "renderer created!" << std::endl;
 		}
@@ -76,7 +76,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		obj_container.spawn_as<Button>("diamond-sword", "diamond-sword", tex_mgr, 0.5, true);
 		obj_container.spawn_as<streched_bg_obj>("-", "-", tex_mgr, 1.0f, false);
 		obj_container.spawn_as<GameObject>("sussy", "sussy", tex_mgr, 1.0f, true);
-		obj_container.spawn_as<sprite>("s1", "s1", tex_mgr, 1.0f, true);
+		obj_container.spawn_as<sprite>("s1", "-", tex_mgr, 1.0f, true);
 
 		sprite& cocacola = *obj_container.get<sprite>("s1");
 
@@ -152,8 +152,8 @@ void Game::render() {
 }
 
 void Game::clean() {
-	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
 	IMG_Quit();
 	SDL_Quit();
 	std::cout << "clean run" << std::endl;

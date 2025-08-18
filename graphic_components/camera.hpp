@@ -6,7 +6,6 @@
 #include <memory>
 #include <string>
 #include "SDL.h"
-#include "SDL_image.h"
 
 struct Camera {
     int x = 0;

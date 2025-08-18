@@ -28,6 +28,7 @@ public:
     void load_textures_from_folder(const string& folder_path);
     void set_renderer(SDL_Renderer* rend) { renderer = rend; }
     void unload_texture(const string& name);
+    bool has(const string& name);
     void clear();
 };
 

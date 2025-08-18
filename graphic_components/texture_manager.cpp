@@ -129,6 +129,11 @@ void texture_manager::unload_texture(const std::string& name) {
     }
 }
 
+bool texture_manager::has(const string& name) {
+    auto it = textures.find(name);
+    return (it != textures.end()) ? true : false;
+}
+
 void texture_manager::clear() {
     for (auto& [name, texture] : textures) {
         SDL_DestroyTexture(texture);

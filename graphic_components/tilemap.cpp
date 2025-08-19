@@ -41,8 +41,8 @@ void tilemap::rebuild_cache(SDL_Renderer* renderer) {
     int rows_in_tileset = tex_h / tile_height;
     int max_tiles = cols_in_tileset * rows_in_tileset;
 
-    int rows = map_data.size();
-    int cols = rows ? map_data[0].size() : 0;
+    size_t rows = map_data.size();
+    size_t cols = rows ? map_data[0].size() : 0;
     cache_width = cols * draw_tile_width;
     cache_height = rows * draw_tile_height;
 
@@ -69,8 +69,8 @@ void tilemap::rebuild_cache(SDL_Renderer* renderer) {
             if (idx < 0 || idx >= max_tiles) continue;
 
             SDL_FRect src{
-                (idx % cols_in_tileset) * tile_width,
-                (idx / cols_in_tileset) * tile_height,
+                (idx % cols_in_tileset) * static_cast<float>(tile_width),
+                (idx / cols_in_tileset) * static_cast<float>(tile_height),
                 tile_width,
                 tile_height
             };
@@ -88,7 +88,7 @@ void tilemap::rebuild_cache(SDL_Renderer* renderer) {
     cache_dirty = false;
 }
 
-void tilemap::render(SDL_Renderer* renderer, int offset_x, int offset_y) {
+void tilemap::render(SDL_Renderer* renderer, float offset_x, float offset_y) {
     if (cache_dirty) {
         rebuild_cache(renderer);
     }

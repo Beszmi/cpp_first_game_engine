@@ -94,7 +94,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	floppa.init("floppa", tex_mgr, screen_w, screen_h);
 	
 	Button& button_obj = *obj_container.get<Button>("diamond-sword");
-	int temp = button_obj.GameObject::get_dst_rect().w;
+	float temp = button_obj.GameObject::get_dst_rect().w;
 	button_obj.get_transform()->setWorld(screen_w - temp, 0);
 	button_obj.get_transform()->computeWorld();
 

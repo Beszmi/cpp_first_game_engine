@@ -6,7 +6,8 @@
 #include <memory>
 #include <string>
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_main.h>
+#include <SDL3_image/SDL_image.h>
+
 struct Camera {
     float x = 0;
 	float y = 0;

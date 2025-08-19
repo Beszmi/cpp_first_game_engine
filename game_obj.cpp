@@ -10,10 +10,10 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	}
 	set_loc_position(0, 0);
 	transform.setWorld(0, 0);
-	int w = 0, h = 0;
-	if (obj_tex) SDL_QueryTexture(obj_tex, nullptr, nullptr, &w, &h);
+	float w = 0, h = 0;
+	if (obj_tex) SDL_GetTextureSize(obj_tex, &w, &h);
 	src_rect = { 0, 0, w, h };
-	dst_rect = { 0, 0, float(w), float(h) };
+	dst_rect = { 0, 0, w, h };
 }
 
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, float scale, bool show_it) : name(name), scale(scale), show(show_it), obj_tex(nullptr) {
@@ -25,10 +25,10 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	}
 	set_loc_position(x, y);
 	transform.setWorld(x, y);
-	int w = 0, h = 0;
-	if (obj_tex) SDL_QueryTexture(obj_tex, nullptr, nullptr, &w, &h);
+	float w = 0, h = 0;
+	if (obj_tex) SDL_GetTextureSize(obj_tex, &w, &h);
 	src_rect = { 0, 0, w, h };
-	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), float(w), float(h) };
+	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), w, h };
 }
 
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, float scale, bool show_it): name(name), scale(scale), show(show_it), obj_tex(nullptr) {
@@ -41,11 +41,11 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	transform.parent = prn->get_transform();
 	set_loc_position(0, 0);
 
-	int w = 0, h = 0;
-	if (obj_tex) SDL_QueryTexture(obj_tex, nullptr, nullptr, &w, &h);
+	float w = 0, h = 0;
+	if (obj_tex) SDL_GetTextureSize(obj_tex, &w, &h);
 	transform.computeWorld();
 	src_rect = { 0, 0, w, h };
-	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), float(w), float(h) };
+	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), w, h };
 }
 
 GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, float scale, bool show_it): name(name), scale(scale), show(show_it), obj_tex(nullptr) {
@@ -58,11 +58,11 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	transform.parent = prn->get_transform();
 	set_loc_position(x, y);
 
-	int w = 0, h = 0;
-	if (obj_tex) SDL_QueryTexture(obj_tex, nullptr, nullptr, &w, &h);
+	float w = 0, h = 0;
+	if (obj_tex) SDL_GetTextureSize(obj_tex, &w, &h);
 	transform.computeWorld();
 	src_rect = { 0, 0, w, h };
-	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), float(w), float(h)};
+	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), w, h};
 }
 
 GameObject::GameObject(const GameObject& rhs) : name(rhs.name), obj_tex(rhs.obj_tex), src_rect(rhs.src_rect), dst_rect(rhs.dst_rect), scale(rhs.scale), show(rhs.show) {
@@ -89,7 +89,7 @@ void GameObject::render(SDL_Renderer* ren, const Camera& cam) const {
 	camDst.y -= cam.y;
 	camDst.w *= scale;
 	camDst.h *= scale;
-	SDL_RenderCopyF(ren, obj_tex, &src_rect, &camDst);
+	SDL_RenderTexture(ren, obj_tex, &src_rect, &camDst);
 }
 
 std::unique_ptr<GameObject> GameObject::clone() const {
@@ -193,11 +193,11 @@ void streched_bg_obj::render(SDL_Renderer* ren, const Camera& cam) const {
 
 void sprite::add_element(const std::string& texture, const texture_manager& tex_mgr) {
 	if (elements.size() < 1) {
-		int w, h;
+		float w, h;
 		auto adding_Tex = tex_mgr.get_texture(texture);
-		SDL_QueryTexture(adding_Tex, nullptr, nullptr, &w, &h);
+		SDL_GetTextureSize(adding_Tex, &w, &h);
 		get_src_rect() = { 0, 0, w, h };
-		get_dst_rect() = { (float)round(get_transform()->worldX), (float)round(get_transform()->worldY), float(w), float(h) };
+		get_dst_rect() = { (float)round(get_transform()->worldX), (float)round(get_transform()->worldY), w, h };
 	}
 
 	auto p = std::make_unique<sprite_component>(texture, tex_mgr);

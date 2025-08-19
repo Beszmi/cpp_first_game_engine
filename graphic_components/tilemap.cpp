@@ -80,7 +80,7 @@ void tilemap::rebuild_cache(SDL_Renderer* renderer) {
                 draw_tile_width,
                 draw_tile_height
             };
-            SDL_RenderCopy(renderer, tileset, &src, &dst);
+            SDL_RenderTexture(renderer, tileset, &src, &dst);
         }
     }
 
@@ -96,5 +96,5 @@ void tilemap::render(SDL_Renderer* renderer, int offset_x, int offset_y) {
 
     SDL_Rect dst{ offset_x, offset_y,
                    cache_width, cache_height };
-    SDL_RenderCopy(renderer, cache_texture, nullptr, &dst);
+    SDL_RenderTexture(renderer, cache_texture, nullptr, &dst);
 }

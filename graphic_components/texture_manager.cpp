@@ -75,7 +75,7 @@ SDL_Texture* texture_manager::load_texture(const std::string& name, const std::s
     }
 
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
+    SDL_DestroySurface(surface);
 
     if (!texture) {
         std::cerr << "Failed to create texture from: " << filename << "\n";

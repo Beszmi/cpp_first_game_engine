@@ -4,6 +4,29 @@ Game::Game() : tex_mgr(nullptr), screen_w(0), screen_h(0) {}
 
 Game::~Game() { clean(); }
 
+namespace {
+	bool GetWindowBorders(int& top, int& bottom) {
+		top = bottom = 0;
+
+		SDL_Window* test = SDL_CreateWindow("test", 64, 64, 0);
+		if (!test) return false;
+
+		SDL_ShowWindow(test);
+
+		const Uint64 start = SDL_GetTicksNS();
+		bool status = false;
+		while ((SDL_GetTicksNS() - start) < 150'000'000ULL) {
+			SDL_PumpEvents();
+			status = SDL_GetWindowBordersSize(test, &top, nullptr, &bottom, nullptr);
+			if (status) break;
+			SDL_Delay(1);
+		}
+
+		SDL_DestroyWindow(test);
+		return status;
+	}
+}
+
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen) {
 	int flags = fullscreen ? SDL_WINDOW_FULLSCREEN : 0;
 
@@ -16,19 +39,24 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	int target_w = width;
 	int target_h = height;
 	int target_x = -1, target_y = -1;
-
+	SDL_SetWindowMinimumSize(window, 640, 360);
+	SDL_SetWindowMaximumSize(window, 3840, 2160);
 	SDL_WindowFlags wflags = SDL_WINDOW_HIGH_PIXEL_DENSITY;
 	if (fullscreen) {
 		wflags |= SDL_WINDOW_FULLSCREEN;
 	}
 	else {
+		wflags |= SDL_WINDOW_RESIZABLE;
+		int topBorder = 0, bottomBorder = 0;
+		GetWindowBorders(topBorder, bottomBorder);
+
 		if (SDL_DisplayID did = SDL_GetPrimaryDisplay()) {
 			SDL_Rect usable{};
 			if (SDL_GetDisplayUsableBounds(did, &usable)) {
 				target_w = usable.w;
-				target_h = usable.h;
+				target_h = usable.h - topBorder;
 				target_x = usable.x;
-				target_y = usable.y;
+				target_y = usable.y + topBorder;
 			}
 			else {
 				std::cerr << "SDL_GetDisplayUsableBounds failed: " << SDL_GetError() << "\n";

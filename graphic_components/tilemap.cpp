@@ -35,14 +35,14 @@ void tilemap::rebuild_cache(SDL_Renderer* renderer) {
         return;
     }
 
-    int tex_w, tex_h;
-    SDL_QueryTexture(tileset, nullptr, nullptr, &tex_w, &tex_h);
+    float tex_w, tex_h;
+    SDL_GetTextureSize(tileset, &tex_w, &tex_h);
     int cols_in_tileset = tex_w / tile_width;
     int rows_in_tileset = tex_h / tile_height;
     int max_tiles = cols_in_tileset * rows_in_tileset;
 
-    int rows = map_data.size();
-    int cols = rows ? map_data[0].size() : 0;
+    size_t rows = map_data.size();
+    size_t cols = rows ? map_data[0].size() : 0;
     cache_width = cols * draw_tile_width;
     cache_height = rows * draw_tile_height;
 
@@ -68,19 +68,19 @@ void tilemap::rebuild_cache(SDL_Renderer* renderer) {
             int idx = map_data[r][c];
             if (idx < 0 || idx >= max_tiles) continue;
 
-            SDL_Rect src{
-                (idx % cols_in_tileset) * tile_width,
-                (idx / cols_in_tileset) * tile_height,
+            SDL_FRect src{
+                (idx % cols_in_tileset) * static_cast<float>(tile_width),
+                (idx / cols_in_tileset) * static_cast<float>(tile_height),
                 tile_width,
                 tile_height
             };
-            SDL_Rect dst{
+            SDL_FRect dst{
                 c * draw_tile_width,
                 r * draw_tile_height,
                 draw_tile_width,
                 draw_tile_height
             };
-            SDL_RenderCopy(renderer, tileset, &src, &dst);
+            SDL_RenderTexture(renderer, tileset, &src, &dst);
         }
     }
 
@@ -88,13 +88,13 @@ void tilemap::rebuild_cache(SDL_Renderer* renderer) {
     cache_dirty = false;
 }
 
-void tilemap::render(SDL_Renderer* renderer, int offset_x, int offset_y) {
+void tilemap::render(SDL_Renderer* renderer, float offset_x, float offset_y) {
     if (cache_dirty) {
         rebuild_cache(renderer);
     }
     if (!cache_texture) return;
 
-    SDL_Rect dst{ offset_x, offset_y,
+    SDL_FRect dst{ offset_x, offset_y,
                    cache_width, cache_height };
-    SDL_RenderCopy(renderer, cache_texture, nullptr, &dst);
+    SDL_RenderTexture(renderer, cache_texture, nullptr, &dst);
 }

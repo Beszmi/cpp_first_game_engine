@@ -20,7 +20,7 @@ public:
     void set_map(const vector<vector<int>>& map);
     void fill_grid(int rows, int cols, int tile_index);
     void fill_background(int screen_w, int screen_h, int tile_index);
-    void render(SDL_Renderer* renderer, int offset_x = 0, int offset_y = 0);
+    void render(SDL_Renderer* renderer, float offset_x = 0, float offset_y = 0);
     ~tilemap();
 private:
     void rebuild_cache(SDL_Renderer* renderer);

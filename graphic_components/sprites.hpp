@@ -4,8 +4,8 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "SDL.h"
-#include "SDL_image.h"
+#include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 #include "texture_manager.hpp"
 #include "camera.hpp"
 
@@ -14,16 +14,16 @@ class sprite_component {
 public:
 	sprite_component();
 	sprite_component(const std::string& texture, const texture_manager& tex_mgr);
-	virtual void render(SDL_Renderer* ren, const SDL_Rect* src_rect, const SDL_Rect* dst_rect, const Camera& cam) const;
-	virtual void render(SDL_Renderer* ren, const SDL_Rect* src_rect, const SDL_FRect* dst_rect, const Camera& cam, double scale) const;
+	virtual void render(SDL_Renderer* ren, const SDL_FRect* src_rect, const SDL_FRect* dst_rect, const Camera& cam) const;
+	virtual void render(SDL_Renderer* ren, const SDL_FRect* src_rect, const SDL_FRect* dst_rect, const Camera& cam, double scale) const;
 	SDL_Texture* get_tex() { return obj_tex; }
 	void set_tex(const std::string& texture, const texture_manager& tex_mgr);
 	virtual ~sprite_component() {}
 };
 
 class strech_bg :public sprite_component {
-	SDL_Rect src_rect;
-	SDL_Rect screen;
+	SDL_FRect src_rect;
+	SDL_FRect screen;
 public:
 	strech_bg();
 	strech_bg(const std::string& texture, const texture_manager& tex_mgr, int screen_w, int screen_h);

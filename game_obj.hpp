@@ -7,8 +7,8 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "SDL.h"
-#include "SDL_image.h"
+#include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 #include "graphic_components/texture_manager.hpp"
 #include "graphic_components/camera.hpp"
 #include "graphic_components/sprites.hpp"
@@ -22,7 +22,7 @@ class GameObject {
 	std::string name;
 	Transform transform;
 	SDL_Texture* obj_tex;
-	SDL_Rect src_rect;
+	SDL_FRect src_rect;
 	SDL_FRect dst_rect;
 	bool show;
 	float scale;
@@ -53,9 +53,9 @@ public:
 
 	SDL_Texture* get_tex();
 	SDL_Texture* get_tex() const;
-	SDL_Rect& get_src_rect() { return src_rect; }
+	SDL_FRect& get_src_rect() { return src_rect; }
 	SDL_FRect& get_dst_rect() { return dst_rect; }
-	const SDL_Rect& get_src_rect() const { return src_rect; }
+	const SDL_FRect& get_src_rect() const { return src_rect; }
 	const SDL_FRect& get_dst_rect() const { return dst_rect; }
 	void set_dst_rect(double x, double y);
 

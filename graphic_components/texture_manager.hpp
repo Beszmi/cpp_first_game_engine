@@ -2,13 +2,13 @@
 #ifndef texture_manager_h
 #define texture_manager_h
 #include <iostream>
-#include "SDL.h"
-#include "SDL_image.h"
 #include <unordered_map>
 #include <vector>
 #include <string>
 #include <filesystem>
 #include <algorithm>
+#include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 using namespace std;
 
 class texture_manager {

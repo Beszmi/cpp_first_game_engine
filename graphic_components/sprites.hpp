@@ -4,8 +4,9 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "SDL.h"
-#include "SDL_image.h"
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
+#include <SDL3_image/SDL_image.h>
 #include "texture_manager.hpp"
 #include "camera.hpp"
 

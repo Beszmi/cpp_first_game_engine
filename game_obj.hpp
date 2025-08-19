@@ -7,8 +7,9 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "SDL.h"
-#include "SDL_image.h"
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
+#include <SDL3_image/SDL_image.h>
 #include "graphic_components/texture_manager.hpp"
 #include "graphic_components/camera.hpp"
 #include "graphic_components/sprites.hpp"

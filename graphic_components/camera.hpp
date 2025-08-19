@@ -5,8 +5,8 @@
 #include <unordered_map>
 #include <memory>
 #include <string>
-#include "SDL.h"
-
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
 struct Camera {
     double x = 0;
     double y = 0;

@@ -16,12 +16,13 @@ Made with SDL 2.32.8 and SDL image 2.8.6
 
 **Features coming soon:**
 
+- move to SDL3
 - controls for in-game objects,
 - camera feature extension
 
 **Features coming later:**
 - Text display support,
-- move to SDL3
+
 - collisions
 
 **Please note that all the assets in the project are just copyright free place holders!**

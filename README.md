@@ -1,8 +1,7 @@
 # cpp_first_game_engine
 
-Made with SDL 2.32.8 and SDL image 2.8.6
+Made with SDL 3.2.2 and SDL image 3.2.4
 
-  
 
 **Current features:**
 
@@ -13,16 +12,16 @@ Made with SDL 2.32.8 and SDL image 2.8.6
 - Game objects system
 - game object made out of multiple separate game objects,
 - sprites and animations
+- SDL3
 
 **Features coming soon:**
 
-- move to SDL3
 - controls for in-game objects,
 - camera feature extension
 
 **Features coming later:**
-- Text display support,
 
+- Text display support,
 - collisions
 
 **Please note that all the assets in the project are just copyright free place holders!**

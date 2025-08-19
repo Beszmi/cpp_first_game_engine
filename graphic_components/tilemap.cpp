@@ -35,8 +35,8 @@ void tilemap::rebuild_cache(SDL_Renderer* renderer) {
         return;
     }
 
-    int tex_w, tex_h;
-    SDL_QueryTexture(tileset, nullptr, nullptr, &tex_w, &tex_h);
+    float tex_w, tex_h;
+    SDL_GetTextureSize(tileset, &tex_w, &tex_h);
     int cols_in_tileset = tex_w / tile_width;
     int rows_in_tileset = tex_h / tile_height;
     int max_tiles = cols_in_tileset * rows_in_tileset;
@@ -68,13 +68,13 @@ void tilemap::rebuild_cache(SDL_Renderer* renderer) {
             int idx = map_data[r][c];
             if (idx < 0 || idx >= max_tiles) continue;
 
-            SDL_Rect src{
+            SDL_FRect src{
                 (idx % cols_in_tileset) * tile_width,
                 (idx / cols_in_tileset) * tile_height,
                 tile_width,
                 tile_height
             };
-            SDL_Rect dst{
+            SDL_FRect dst{
                 c * draw_tile_width,
                 r * draw_tile_height,
                 draw_tile_width,
@@ -94,7 +94,7 @@ void tilemap::render(SDL_Renderer* renderer, int offset_x, int offset_y) {
     }
     if (!cache_texture) return;
 
-    SDL_Rect dst{ offset_x, offset_y,
+    SDL_FRect dst{ offset_x, offset_y,
                    cache_width, cache_height };
     SDL_RenderTexture(renderer, cache_texture, nullptr, &dst);
 }

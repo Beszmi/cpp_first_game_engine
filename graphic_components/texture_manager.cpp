@@ -70,7 +70,6 @@ SDL_Texture* texture_manager::load_texture(const std::string& name, const std::s
     SDL_Surface* surface = IMG_Load(filename.c_str());
     if (!surface) {
         std::cerr << "Failed to load image: " << filename << "\n";
-        std::cerr << "SDL_image error: " << IMG_GetError() << "\n";
         return nullptr;
     }
 

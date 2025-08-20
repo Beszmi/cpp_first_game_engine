@@ -164,11 +164,10 @@ void Game::handleEvents() {
 		}
 	}
 
-	//const Uint8* keys = SDL_GetKeyboardState(nullptr);
 	int numkeys = 0;
 	const bool* keys = SDL_GetKeyboardState(&numkeys);
 
-	const int pan = 600 / 60; // your original step; make dt-based if you like
+	const int pan = 600 / 60; // original step; make dt-based later
 	cam.x += (keys[SDL_SCANCODE_D] ? pan : 0) - (keys[SDL_SCANCODE_A] ? pan : 0);
 	cam.y += (keys[SDL_SCANCODE_S] ? pan : 0) - (keys[SDL_SCANCODE_W] ? pan : 0);
 }

@@ -26,11 +26,12 @@ class GameObject {
 	SDL_FRect dst_rect;
 	bool show;
 	float scale;
+	int layer;
 public:
-	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, float scale = 1.0f, bool show_it = false);
-	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, float scale = 1.0f, bool show_it = false);
-	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, float scale = 1.0f, bool show_it = false);
-	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, float scale = 1.0f, bool show_it = false);
+	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, float scale = 1.0f, bool show_it = false, int layer_in = 0);
+	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, float scale = 1.0f, bool show_it = false, int layer_in = 0);
+	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, float scale = 1.0f, bool show_it = false, int layer_in = 0);
+	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, float scale = 1.0f, bool show_it = false, int layer_in = 0);
 	GameObject(const GameObject& rhs);
 
 	const std::string& get_name() const { return name; }
@@ -64,11 +65,22 @@ public:
 
 	bool does_show() const { return show; }
 	void set_show(bool v) { show = v; }
+
+	int  get_layer() const { return layer; }
+	void set_layer(int l) { layer = l; } // call rebuild_order in the container after this
 };
 
 class Game_obj_container {
 	std::unordered_map<std::string, std::unique_ptr<GameObject>> objects;
+
+	mutable std::vector<GameObject*> render_order_;
+	mutable bool order_dirty_ = true;
 public:
+
+	void rebuild_order() const;
+	void set_layer(GameObject& obj, int new_layer);
+	void invalidate_render_order() { order_dirty_ = true; } //call after direct change to game_obj's state, otherwise set_layer handles it
+
 	template<typename T, typename... Args>
 	T* spawn_as(const std::string& name, Args&&... args) {
 		auto p = std::make_unique<T>(name, std::forward<Args>(args)...);

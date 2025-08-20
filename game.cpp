@@ -106,7 +106,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	obj_container.spawn_as<GameObject>("dirt", "dirt", tex_mgr, 1.0f, true);
 	obj_container.spawn_as<GameObject>("diamond", "diamond", tex_mgr, 1.0f, true);
 	obj_container.spawn_as<Button>("diamond-sword", "diamond-sword", tex_mgr, 0.5, true);
-	obj_container.spawn_as<streched_bg_obj>("-", "-", tex_mgr, 1.0f, false);
+	obj_container.spawn_as<streched_bg_obj>("-", "-", tex_mgr, 1.0f, false, -1);
 	obj_container.spawn_as<GameObject>("sussy", "sussy", tex_mgr, 1.0f, true);
 	obj_container.spawn_as<sprite>("s1", "-", tex_mgr, 1.0f, true);
 

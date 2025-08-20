@@ -1,7 +1,7 @@
 #include "game_obj.hpp"
 
 //BASE OBJECT
-GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, float scale, bool show_it): name(name), scale(scale), show(show_it), obj_tex(nullptr) {
+GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, float scale, bool show_it, int layer_in): name(name), scale(scale), show(show_it), obj_tex(nullptr), layer(layer_in) {
 	if (texture != "-") {
 		obj_tex = tex_mgr.get_texture(texture);
 		if (!obj_tex) {
@@ -16,7 +16,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	dst_rect = { 0, 0, w, h };
 }
 
-GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, float scale, bool show_it) : name(name), scale(scale), show(show_it), obj_tex(nullptr) {
+GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, float scale, bool show_it, int layer_in) : name(name), scale(scale), show(show_it), obj_tex(nullptr), layer(layer_in) {
 	if (texture != "-") {
 		obj_tex = tex_mgr.get_texture(texture);
 		if (!obj_tex) {
@@ -31,7 +31,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), w, h };
 }
 
-GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, float scale, bool show_it): name(name), scale(scale), show(show_it), obj_tex(nullptr) {
+GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, float scale, bool show_it, int layer_in): name(name), scale(scale), show(show_it), obj_tex(nullptr), layer(layer_in) {
 	if (texture != "-") {
 		obj_tex = tex_mgr.get_texture(texture);
 		if (!obj_tex) {
@@ -48,7 +48,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), w, h };
 }
 
-GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, float scale, bool show_it): name(name), scale(scale), show(show_it), obj_tex(nullptr) {
+GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, float scale, bool show_it, int layer_in): name(name), scale(scale), show(show_it), obj_tex(nullptr), layer(layer_in) {
 	if (texture != "-") {
 		obj_tex = tex_mgr.get_texture(texture);
 		if (!obj_tex) {
@@ -65,10 +65,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), w, h};
 }
 
-GameObject::GameObject(const GameObject& rhs) : name(rhs.name), obj_tex(rhs.obj_tex), src_rect(rhs.src_rect), dst_rect(rhs.dst_rect), scale(rhs.scale), show(rhs.show) {
-	set_loc_position(rhs.transform.localX, rhs.transform.localY);
-	transform.setWorld(rhs.transform.worldX, rhs.transform.worldY);
-}
+GameObject::GameObject(const GameObject& rhs) : name(rhs.name), obj_tex(rhs.obj_tex), transform(rhs.transform), src_rect(rhs.src_rect), dst_rect(rhs.dst_rect), scale(rhs.scale), show(rhs.show), layer(rhs.layer) {}
 
 void GameObject::set_dst_rect(double x, double y) {
 	dst_rect.x = static_cast<float>(std::lround(x));
@@ -105,13 +102,42 @@ SDL_Texture* GameObject::get_tex() const {
 }
 
 //CONTAINER
+
+void Game_obj_container::rebuild_order() const {
+	render_order_.clear();
+	render_order_.reserve(objects.size());
+	for (auto& [_, up] : objects) {
+		if (up->does_show()) render_order_.push_back(up.get());
+	}
+	std::stable_sort(render_order_.begin(), render_order_.end(),
+		[](const GameObject* a, const GameObject* b) {
+			if (a->get_layer() != b->get_layer())
+				return a->get_layer() < b->get_layer();
+			return std::less<const GameObject*>{}(a, b);
+		});
+}
+
+void Game_obj_container::set_layer(GameObject& obj, int new_layer) {
+	if (obj.get_layer() != new_layer) {
+		obj.set_layer(new_layer);
+		order_dirty_ = true;
+	}
+}
+
 void Game_obj_container::update_all(double dtSeconds, double speed) {
 	for (auto& [_, obj] : objects) {
 		obj->update(dtSeconds, speed);
 	}
 }
+
 void Game_obj_container::render_all(SDL_Renderer* ren, const Camera& cam) const {
-	for (const auto& [_, obj] : objects) obj->render(ren, cam);
+	if (order_dirty_) {
+		rebuild_order();
+		order_dirty_ = false;
+	}
+	for (const GameObject* o : render_order_) {
+		o->render(ren, cam);
+	}
 }
 
 //OBJECT CLUSTER

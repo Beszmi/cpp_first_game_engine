@@ -86,7 +86,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	}
 
 	if (!SDL_SetRenderVSync(renderer, SDL_RENDERER_VSYNC_ADAPTIVE)) {
-		// fall back to normal vsync
+		//if adaptive not available unlimited fps
 		SDL_SetRenderVSync(renderer, 0);
 	}
 
@@ -130,14 +130,20 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	test_obj.add_item_local(*obj_container.get("dirt"), 50, -40, true);
 	test_obj.add_item_local(*obj_container.get("diamond"), -10, 20, true);
 
-	SDL_Texture* dirtTex = tex_mgr.get_texture("dirt");
-	float tex_w, tex_h;
-	SDL_GetTextureSize(dirtTex, &tex_w, &tex_h);
-	auto bg = std::make_unique<tilemap>(&tex_mgr, "dirt", tex_w, tex_h, 1);
-	bg->fill_background(screen_w, screen_h, 0);
-	maps.push_back(std::move(bg));
+	SDL_Texture* dirt = tex_mgr.get_texture("dirt");
+	if (!dirt) {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Missing texture: dirt");
+	}
+	else {
+		float tw = 0.f, th = 0.f;
+		SDL_GetTextureSize(dirt, &tw, &th);
+		auto bg = std::make_unique<tilemap>(&tex_mgr,"dirt",(int)tw, (int)th,1,(int)tw, (int)th);
 
-	auto treeMap = std::make_unique<tilemap>(&tex_mgr, "pngtree", 300, 300, 1, 300, 300);
+		bg->fill_background(0, 0, 0);
+		maps.push_back(std::move(bg));
+	}
+
+	auto treeMap = std::make_unique<tilemap>(&tex_mgr,"pngtree",300, 300, 1, 300, 300);
 	treeMap->fill_grid(2, 2, 0);
 	maps.push_back(std::move(treeMap));
 
@@ -212,8 +218,9 @@ void Game::render() {
 		std::cerr << "[SDL] RenderCopy error renderer begin: " << SDL_GetError() << "\n";
 		SDL_ClearError();
 	}
-	for (auto& layer : maps) {
-		layer->render(renderer, -cam.x, -cam.y);
+	SDL_SetRenderScale(renderer, cam.zoom, cam.zoom);
+	for (auto& m : maps) {
+		m->render(renderer, cam);
 	}
 
 	obj_container.render_all(renderer, cam);

@@ -15,7 +15,6 @@ inline void ApplyCamera(SDL_Renderer* r, const Camera& cam) {
 	SDL_SetRenderScale(r, cam.zoom, cam.zoom);
 }
 
-// Convert window mouse to render coords (pre-scale, pre-camera).
 inline void WindowToRender(SDL_Renderer* r, float winX, float winY, float& rx, float& ry) {
 	SDL_RenderCoordinatesFromWindow(r, winX, winY, &rx, &ry);
 }

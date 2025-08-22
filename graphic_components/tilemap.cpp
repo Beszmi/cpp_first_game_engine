@@ -1,100 +1,119 @@
 #include "tilemap.hpp"
-using namespace std;
+using std::vector;
 
-tilemap::tilemap(texture_manager* mgr, const std::string& tileset, int tileW, int tileH, int columns, int drawW, int drawH) :
-    tex_mgr(mgr), tileset_name(tileset), tile_width(tileW), tile_height(tileH), tileset_columns(columns), cache_texture(nullptr), cache_width(0), cache_height(0),
-    draw_tile_width(drawW > 0 ? drawW : tileW), draw_tile_height(drawH > 0 ? drawH : tileH), cache_dirty(true) {}
+tilemap::tilemap(texture_manager* mgr, const std::string& tileset,
+    int tileW, int tileH, int columns, int drawW, int drawH)
+    : tex_mgr(mgr),
+    tileset_name(tileset),
+    tile_width(tileW), tile_height(tileH),
+    draw_tile_width(drawW > 0 ? drawW : tileW),
+    draw_tile_height(drawH > 0 ? drawH : tileH),
+    tileset_columns(columns)
+{
+}
 
 void tilemap::set_map(const vector<vector<int>>& map) {
     map_data = map;
-    cache_dirty = true;
+    repeat_background = false;
+    repeat_tile_index = -1;
 }
 
 void tilemap::fill_grid(int rows, int cols, int tile_index) {
     map_data.assign(rows, std::vector<int>(cols, tile_index));
-    cache_dirty = true;
+    repeat_background = false;
+    repeat_tile_index = -1;
 }
 
-void tilemap::fill_background(int screen_w, int screen_h, int tile_index) {
-    int cols = (screen_w + tile_width - 1) / tile_width;
-    int rows = (screen_h + tile_height - 1) / tile_height;
-    map_data.assign(rows, std::vector<int>(cols, tile_index));
-    cache_dirty = true;
+void tilemap::fill_background(int /*screen_w*/, int /*screen_h*/, int tile_index) {
+    repeat_background = true;
+    repeat_tile_index = tile_index;
+    map_data.clear();
 }
 
-tilemap::~tilemap() {
-    if (cache_texture) {
-        SDL_DestroyTexture(cache_texture);
+inline SDL_FRect tilemap::src_from_index(int idx) const {
+    const float sx = (idx % tileset_columns) * static_cast<float>(tile_width);
+    const float sy = (idx / tileset_columns) * static_cast<float>(tile_height);
+    return SDL_FRect{ sx, sy, (float)tile_width, (float)tile_height };
+}
+
+void tilemap::render(SDL_Renderer* renderer, const Camera& cam) {
+    if (repeat_background && repeat_tile_index >= 0) {
+        render_repeating_bg(renderer, cam, repeat_tile_index);
+    }
+    else {
+        render_visible(renderer, cam);
     }
 }
 
-void tilemap::rebuild_cache(SDL_Renderer* renderer) {
+void tilemap::render_visible(SDL_Renderer* renderer, const Camera& cam) {
     SDL_Texture* tileset = tex_mgr->get_texture(tileset_name);
-    if (!tileset) {
-        std::cerr << "[tilemap] Missing tileset: " << tileset_name << "\n";
-        return;
-    }
+    if (!tileset || map_data.empty()) return;
 
-    float tex_w, tex_h;
-    SDL_GetTextureSize(tileset, &tex_w, &tex_h);
-    int cols_in_tileset = tex_w / tile_width;
-    int rows_in_tileset = tex_h / tile_height;
-    int max_tiles = cols_in_tileset * rows_in_tileset;
+    int outW = 0, outH = 0;
+    SDL_GetCurrentRenderOutputSize(renderer, &outW, &outH);
+    const float viewX = cam.x;
+    const float viewY = cam.y;
+    const float viewW = outW / cam.zoom;
+    const float viewH = outH / cam.zoom;
 
-    size_t rows = map_data.size();
-    size_t cols = rows ? map_data[0].size() : 0;
-    cache_width = cols * draw_tile_width;
-    cache_height = rows * draw_tile_height;
+    const int rows = (int)map_data.size();
+    const int cols = rows ? (int)map_data[0].size() : 0;
+    if (!rows || !cols) return;
 
-    if (cache_texture) SDL_DestroyTexture(cache_texture);
-    cache_texture = SDL_CreateTexture(
-        renderer,
-        SDL_PIXELFORMAT_RGBA8888,
-        SDL_TEXTUREACCESS_TARGET,
-        cache_width, cache_height
-    );
-    if (!cache_texture) {
-        std::cerr << "[tilemap] Failed to create cache: " << SDL_GetError() << "\n";
-        return;
-    }
+    const int firstCol = std::max(0, (int)std::floor(viewX / draw_tile_width));
+    const int firstRow = std::max(0, (int)std::floor(viewY / draw_tile_height));
+    const int lastCol = std::min(cols - 1, (int)std::floor((viewX + viewW) / draw_tile_width));
+    const int lastRow = std::min(rows - 1, (int)std::floor((viewY + viewH) / draw_tile_height));
 
-    SDL_SetTextureBlendMode(cache_texture, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderTarget(renderer, cache_texture);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderClear(renderer);
+    for (int r = firstRow; r <= lastRow; ++r) {
+        const float dy = r * (float)draw_tile_height - cam.y;
+        for (int c = firstCol; c <= lastCol; ++c) {
+            const int idx = map_data[r][c];
+            if (idx < 0) continue;
 
-    for (int r = 0; r < rows; ++r) {
-        for (int c = 0; c < cols; ++c) {
-            int idx = map_data[r][c];
-            if (idx < 0 || idx >= max_tiles) continue;
-
-            SDL_FRect src{
-                (idx % cols_in_tileset) * static_cast<float>(tile_width),
-                (idx / cols_in_tileset) * static_cast<float>(tile_height),
-                tile_width,
-                tile_height
-            };
+            const SDL_FRect src = src_from_index(idx);
             SDL_FRect dst{
-                c * draw_tile_width,
-                r * draw_tile_height,
-                draw_tile_width,
-                draw_tile_height
+                c * (float)draw_tile_width - cam.x,
+                dy,
+                (float)draw_tile_width,
+                (float)draw_tile_height
             };
             SDL_RenderTexture(renderer, tileset, &src, &dst);
         }
     }
-
-    SDL_SetRenderTarget(renderer, nullptr);
-    cache_dirty = false;
 }
 
-void tilemap::render(SDL_Renderer* renderer, float offset_x, float offset_y) {
-    if (cache_dirty) {
-        rebuild_cache(renderer);
-    }
-    if (!cache_texture) return;
+void tilemap::render_repeating_bg(SDL_Renderer* renderer, const Camera& cam, int tile_index) {
+    SDL_Texture* tileset = tex_mgr->get_texture(tileset_name);
+    if (!tileset) return;
 
-    SDL_FRect dst{ offset_x, offset_y,
-                   cache_width, cache_height };
-    SDL_RenderTexture(renderer, cache_texture, nullptr, &dst);
+    int outW = 0, outH = 0;
+    SDL_GetCurrentRenderOutputSize(renderer, &outW, &outH);
+
+    const float viewW = outW / cam.zoom;
+    const float viewH = outH / cam.zoom;
+
+    const SDL_FRect src = src_from_index(tile_index);
+
+    auto positive_mod = [](float a, float m) {
+        float r = std::fmod(a, m);
+        if (r < 0) r += m;
+        return r;
+        };
+    const float offsetX = -positive_mod(cam.x, (float)draw_tile_width);
+    const float offsetY = -positive_mod(cam.y, (float)draw_tile_height);
+
+    // Requires uniform scaling. If draw W/H are a uniform scale of source, use it:
+    const float sx = (float)draw_tile_width / (float)tile_width;
+    const float sy = (float)draw_tile_height / (float)tile_height;
+    if (std::fabs(sx - sy) < 1e-6f) {
+        SDL_FRect dst = {
+            offsetX,
+            offsetY,
+            viewW + (float)draw_tile_width * 2.0f,
+            viewH + (float)draw_tile_height * 2.0f
+        };
+        SDL_RenderTextureTiled(renderer, tileset, &src, sx, &dst);
+        return;
+    }
 }

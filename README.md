@@ -8,7 +8,7 @@ Made with SDL 3.2.2 and SDL image 3.2.4
 - Texture manager,
 - tile maps, for the whole screen and scalable ones too, with texture caching,
 - Timing based updating,
-- Camera with controls,
+- Camera with controls, and zoom
 - Game objects system
 - game object made out of multiple separate game objects,
 - sprites and animations
@@ -17,11 +17,12 @@ Made with SDL 3.2.2 and SDL image 3.2.4
 **Features coming soon:**
 
 - controls for in-game objects,
-- camera feature extension
+- Text display support,
+- object click and hold actions
 
 **Features coming later:**
 
-- Text display support,
+- adding tools to help non-pint and click kind of games
 - collisions
 
 **Please note that all the assets in the project are just copyright free place holders!**

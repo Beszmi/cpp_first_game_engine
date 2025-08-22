@@ -15,7 +15,7 @@ namespace {
 
 		const Uint64 start = SDL_GetTicksNS();
 		bool status = false;
-		while ((SDL_GetTicksNS() - start) < 150'000'000ULL) {
+		while ((SDL_GetTicksNS() - start) < 50'000'000ULL) {
 			SDL_PumpEvents();
 			status = SDL_GetWindowBordersSize(test, &top, nullptr, &bottom, nullptr);
 			if (status) break;
@@ -156,9 +156,36 @@ void Game::handleEvents() {
 				run = false;
 			}
 			break;
-		case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: 
+		case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
 			SDL_GetWindowSizeInPixels(window, &screen_w, &screen_h);
 			break;
+		case SDL_EVENT_MOUSE_MOTION:
+			mouse.x = e.motion.x, mouse.y = e.motion.y;
+			//mouse.dx = e.motion.xrel, mouse.dy = e.motion.yrel; //currently unused commented out for performance
+			mouse.held = e.motion.state;
+			break;
+		case SDL_EVENT_MOUSE_BUTTON_DOWN:
+		case SDL_EVENT_MOUSE_BUTTON_UP: {
+			int b = e.button.button;
+			bool down = e.button.down;
+			if (down) { mouse.pressed[b] = true;  mouse.held |= SDL_BUTTON_MASK(b); }
+			else { mouse.released[b] = true; mouse.held &= ~SDL_BUTTON_MASK(b); }
+			mouse.clicks[b] = e.button.clicks;
+		}	break;
+		case SDL_EVENT_MOUSE_WHEEL: {
+			const float step = 1.1f; // 1.05–1.2
+			const float z0 = cam.zoom;
+			const float z1 = std::clamp(z0 * std::pow(step, e.wheel.y), 0.1f, 5.0f);
+
+			float mx_i, my_i; SDL_GetMouseState(&mx_i, &my_i);
+			float rx, ry;
+			WindowToRender(renderer, mx_i, my_i, rx, ry);
+
+			// keep cursor anchored: ΔC = r * (1 - z0/z1), with r in render coords
+			cam.x += rx * (1.0f - z0 / z1);
+			cam.y += ry * (1.0f - z0 / z1);
+			cam.zoom = z1;
+		}	break;
 		default:
 			break;
 		}

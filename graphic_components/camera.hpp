@@ -2,17 +2,27 @@
 #ifndef camera_hpp
 #define camera_hpp
 #include <iostream>
-#include <unordered_map>
 #include <memory>
-#include <string>
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 
 struct Camera {
-    float x = 0;
-	float y = 0;
-    float zoom = 1.f;
+	float x = 0.f, y = 0.f;
+	float zoom = 1.f;
 };
+
+inline void ApplyCamera(SDL_Renderer* r, const Camera& cam) {
+	SDL_SetRenderScale(r, cam.zoom, cam.zoom);
+}
+
+// Convert window mouse to render coords (pre-scale, pre-camera).
+inline void WindowToRender(SDL_Renderer* r, float winX, float winY, float& rx, float& ry) {
+	SDL_RenderCoordinatesFromWindow(r, winX, winY, &rx, &ry);
+}
+
+inline SDL_FRect WorldToRender(const SDL_FRect& w, const Camera& c) {
+	return SDL_FRect{ w.x - c.x, w.y - c.y, w.w, w.h };
+}
 
 static inline SDL_FRect worldToScreen(const SDL_FRect& w, const Camera& c) {
     SDL_FRect s;

@@ -141,12 +141,10 @@
   <ItemGroup>
     <ClCompile Include="game.cpp" />
     <ClCompile Include="game_obj.cpp" />
-    <ClCompile Include="graphic_components\camera.cpp" />
     <ClCompile Include="graphic_components\sprites.cpp" />
     <ClCompile Include="graphic_components\texture_manager.cpp" />
     <ClCompile Include="graphic_components\tilemap.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="text.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.hpp" />

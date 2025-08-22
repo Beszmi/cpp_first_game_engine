@@ -10,6 +10,16 @@
 #include "graphic_components/tilemap.hpp"
 #include "graphic_components/camera.hpp"
 
+struct mouse_state {
+	float x = 0, y = 0;
+	float click_x = 0, click_y = 0;
+	float dx = 0, dy = 0;
+	SDL_MouseButtonFlags held = 0;
+	bool pressed[6] = {};
+	bool released[6] = {};
+	Uint8 clicks[6] = {};
+};
+
 class Game {
 	bool run;
 	//int cnt = 0;
@@ -20,6 +30,7 @@ class Game {
 	std::vector<std::unique_ptr<tilemap>> maps;
 	int screen_w, screen_h;
 	Camera cam;
+	mouse_state mouse;
 public:
 	Game();
 	~Game();

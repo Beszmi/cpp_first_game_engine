@@ -81,12 +81,13 @@ void GameObject::update(double dt, double speed) {
 
 void GameObject::render(SDL_Renderer* ren, const Camera& cam) const {
 	if (!show || !obj_tex) return;
-	SDL_FRect camDst = dst_rect;
-	camDst.x -= cam.x;
-	camDst.y -= cam.y;
-	camDst.w *= scale;
-	camDst.h *= scale;
-	SDL_RenderTexture(ren, obj_tex, &src_rect, &camDst);
+	SDL_FRect w = dst_rect;
+	w.w *= scale;
+	w.h *= scale;
+
+	SDL_FRect r = WorldToRender(w, cam);
+
+	SDL_RenderTexture(ren, obj_tex, &src_rect, &r);
 }
 
 std::unique_ptr<GameObject> GameObject::clone() const {
@@ -120,7 +121,7 @@ void Game_obj_container::rebuild_order() const {
 void Game_obj_container::set_layer(GameObject& obj, int new_layer) {
 	if (obj.get_layer() != new_layer) {
 		obj.set_layer(new_layer);
-		order_dirty_ = true;
+		order_dirty = true;
 	}
 }
 
@@ -131,12 +132,24 @@ void Game_obj_container::update_all(double dtSeconds, double speed) {
 }
 
 void Game_obj_container::render_all(SDL_Renderer* ren, const Camera& cam) const {
-	if (order_dirty_) {
+	if (order_dirty) {
 		rebuild_order();
-		order_dirty_ = false;
+		order_dirty = false;
 	}
+	SDL_SetRenderScale(ren, cam.zoom, cam.zoom);
+
+	int outW = 0, outH = 0;
+	SDL_GetCurrentRenderOutputSize(ren, &outW, &outH);
+	SDL_FRect worldView = { cam.x, cam.y, outW / cam.zoom, outH / cam.zoom };
+
+	auto intersects = [](const SDL_FRect& a, const SDL_FRect& b) {
+		return !(a.x > b.x + b.w || a.x + a.w < b.x || a.y > b.y + b.h || a.y + a.h < b.y);
+		};
+
 	for (const GameObject* o : render_order_) {
-		o->render(ren, cam);
+		if (intersects(o->get_dst_rect(), worldView)) {
+			o->render(ren, cam);
+		}
 	}
 }
 

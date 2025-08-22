@@ -74,12 +74,12 @@ class Game_obj_container {
 	std::unordered_map<std::string, std::unique_ptr<GameObject>> objects;
 
 	mutable std::vector<GameObject*> render_order_;
-	mutable bool order_dirty_ = true;
+	mutable bool order_dirty = true;
 public:
 
 	void rebuild_order() const;
 	void set_layer(GameObject& obj, int new_layer);
-	void invalidate_render_order() { order_dirty_ = true; } //call after direct change to game_obj's state, otherwise set_layer handles it
+	void invalidate_render_order() { order_dirty = true; } //call after direct change to game_obj's state, otherwise set_layer handles it
 
 	template<typename T, typename... Args>
 	T* spawn_as(const std::string& name, Args&&... args) {

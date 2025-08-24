@@ -278,7 +278,7 @@ void sprite::update(double dt, double speed) {
 			break;
 		case 1:
 			t = t + dt;
-			if (t >= 0.25) {
+			if (t >= tick_time) {
 				set_current_idx(++current_element);
 				GameObject::update(0.0, 0.0);
 				t = 0;
@@ -286,7 +286,7 @@ void sprite::update(double dt, double speed) {
 			break;
 		case -1:
 			t = t + dt;
-			if (t >= 0.25) {
+			if (t >= tick_time) {
 				set_current_idx(current_element - 1);
 				GameObject::update(0.0, 0.0);
 				t = 0;
@@ -304,6 +304,26 @@ void sprite::update(double dt, double speed) {
 				set_current_idx(current_element - 1);
 				GameObject::update(0.0, 0.0);
 				active = false;
+			}
+			break;
+		case 4:
+			t = t + dt;
+			if (t >= tick_time) {
+				if (hover) {
+					set_current_idx(++current_element);
+					GameObject::update(0.0, 0.0);
+					t = 0;
+				}
+			}
+			break;
+		case -4:
+			t = t + dt;
+			if (t >= tick_time) {
+				if (hover) {
+					set_current_idx(current_element - 1);
+					GameObject::update(0.0, 0.0);
+					t = 0;
+				}
 			}
 			break;
 		default:
@@ -325,4 +345,12 @@ void sprite::render(SDL_Renderer* ren, const Camera& cam) const {
 
 void sprite::action() {
 	active = true;
+}
+
+void sprite::on_hover_enter() {
+	hover = true;
+}
+
+void sprite::on_hover_exit() {
+	hover = false;
 }

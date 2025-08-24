@@ -27,6 +27,9 @@ class GameObject {
 	bool show;
 	float scale;
 	int layer;
+protected:
+	bool active = false;
+	bool hover = false;
 public:
 	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, float scale = 1.0f, bool show_it = false, int layer_in = 0);
 	GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, float scale = 1.0f, bool show_it = false, int layer_in = 0);
@@ -68,7 +71,15 @@ public:
 
 	int  get_layer() const { return layer; }
 	void set_layer(int l) { layer = l; } // call rebuild_order in the container after this
+
 	virtual bool hit_test(float wx, float wy) const;
+
+	virtual void on_hover_enter() {}
+	virtual void on_hover() {}
+	virtual void on_hover_exit() {}
+	virtual void on_hold_start(int button) {}
+	virtual void on_hold(double seconds, int button) {}
+	virtual void on_hold_end(double seconds, int button, bool canceled) {}
 };
 
 class Game_obj_container {
@@ -166,10 +177,10 @@ public:
 
 class sprite : public GameObject {
 	std::vector<std::unique_ptr<sprite_component>> elements;
-	int state = 2; //states in docs
+	int state = -4; //states in docs
 	int current_element = 0;
 	double t = 0;
-	bool active = 0;
+	double tick_time = 0.25;
 public:
 	using GameObject::GameObject;
 
@@ -188,6 +199,8 @@ public:
 	void render(SDL_Renderer* ren, const Camera& cam) const override;
 
 	void action() override;
+	void on_hover_enter() override;
+	void on_hover_exit() override;
 };
 
 #endif

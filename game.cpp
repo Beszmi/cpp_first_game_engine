@@ -166,12 +166,22 @@ void Game::handleEvents() {
 		case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
 			SDL_GetWindowSizeInPixels(window, &screen_w, &screen_h);
 			break;
-		case SDL_EVENT_MOUSE_MOTION:
-			mouse.x = e.motion.x, mouse.y = e.motion.y;
+		case SDL_EVENT_MOUSE_MOTION: {
+			SDL_FPoint W = WindowToWorld(renderer, e.motion.x, e.motion.y, cam);
 			//mouse.dx = e.motion.xrel, mouse.dy = e.motion.yrel; //currently unused commented out for performance
-			mouse.held = e.motion.state;
+			GameObject* hit = obj_container.pick_topmost(W.x, W.y);
+
+			if (hit != hovered) {
+				if (hovered) hovered->on_hover_exit();
+				hovered = hit;
+				if (hovered) hovered->on_hover_enter();
+			}
+			else if (hovered) {
+				hovered->on_hover();
+			}
+		}	break;
+		case SDL_EVENT_MOUSE_BUTTON_DOWN: {}
 			break;
-		//case SDL_EVENT_MOUSE_BUTTON_DOWN:
 		case SDL_EVENT_MOUSE_BUTTON_UP: {
 			if (e.button.button == SDL_BUTTON_LEFT) {
 				SDL_FPoint W = WindowToWorld(renderer, e.button.x, e.button.y, cam);

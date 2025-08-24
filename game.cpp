@@ -100,6 +100,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	if (!tex_mgr.get_texture("dirt")) {
 		std::cerr << "[Error] 'dirt' texture not found after loading assets folder.\n";
 	}
+	SDL_SetTextureScaleMode(tex_mgr.get_texture("dirt"), SDL_SCALEMODE_NEAREST);
 
 	obj_container.spawn_as<GameObject>("mcblock", "mcblock", tex_mgr, 1.0f, true);
 	obj_container.spawn_as<GameObject_cluster>("pngtree", "pngtree", tex_mgr, 1.0f, true);

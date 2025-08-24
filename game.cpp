@@ -171,13 +171,15 @@ void Game::handleEvents() {
 			//mouse.dx = e.motion.xrel, mouse.dy = e.motion.yrel; //currently unused commented out for performance
 			mouse.held = e.motion.state;
 			break;
-		case SDL_EVENT_MOUSE_BUTTON_DOWN:
+		//case SDL_EVENT_MOUSE_BUTTON_DOWN:
 		case SDL_EVENT_MOUSE_BUTTON_UP: {
-			int b = e.button.button;
-			bool down = e.button.down;
-			if (down) { mouse.pressed[b] = true;  mouse.held |= SDL_BUTTON_MASK(b); }
-			else { mouse.released[b] = true; mouse.held &= ~SDL_BUTTON_MASK(b); }
-			mouse.clicks[b] = e.button.clicks;
+			if (e.button.button == SDL_BUTTON_LEFT) {
+				SDL_FPoint W = WindowToWorld(renderer, e.button.x, e.button.y, cam);
+				if (auto* hit = obj_container.pick_topmost(W.x, W.y)) {
+					hit->action();
+				}
+			}
+			//mouse.clicks[b] = e.button.clicks;
 		}	break;
 		case SDL_EVENT_MOUSE_WHEEL: {
 			const float step = 1.1f; // 1.05–1.2

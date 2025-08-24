@@ -102,6 +102,12 @@ SDL_Texture* GameObject::get_tex() const {
 	return obj_tex;
 }
 
+bool GameObject::hit_test(float wx, float wy) const {
+	SDL_FRect b = dst_rect; b.w *= scale; b.h *= scale;
+	return (wx >= b.x && wx < b.x + b.w && wy >= b.y && wy < b.y + b.h);
+}
+
+
 //CONTAINER
 
 void Game_obj_container::rebuild_order() const {
@@ -151,6 +157,15 @@ void Game_obj_container::render_all(SDL_Renderer* ren, const Camera& cam) const 
 			o->render(ren, cam);
 		}
 	}
+}
+
+GameObject* Game_obj_container::pick_topmost(float wx, float wy) const {
+	if (order_dirty) { rebuild_order(); order_dirty = false; }
+	for (auto it = render_order_.rbegin(); it != render_order_.rend(); ++it) {
+		GameObject* o = *it;
+		if (o->does_show() && o->hit_test(wx, wy)) return o;
+	}
+	return nullptr;
 }
 
 //OBJECT CLUSTER
@@ -257,35 +272,44 @@ void sprite::set_current_idx(int idx) {
  
 
 void sprite::update(double dt, double speed) {
-	t = t + dt;
-	if (t >= 0.25) {
-		switch (state)
-		{
+	switch (state){
 		case 0:
 			GameObject::update(0.0, 0.0);
 			break;
 		case 1:
-			set_current_idx(++current_element);
-			GameObject::update(0.0, 0.0);
+			t = t + dt;
+			if (t >= 0.25) {
+				set_current_idx(++current_element);
+				GameObject::update(0.0, 0.0);
+				t = 0;
+			}
 			break;
 		case -1:
-			set_current_idx(current_element - 1);
-			GameObject::update(0.0, 0.0);
+			t = t + dt;
+			if (t >= 0.25) {
+				set_current_idx(current_element - 1);
+				GameObject::update(0.0, 0.0);
+				t = 0;
+			}
 			break;
 		case 2:
-			GameObject::update(0.0, 0.0);
+			if (active) {
+				set_current_idx(++current_element);
+				GameObject::update(0.0, 0.0);
+				active = false;
+			}
 			break;
 		case -2:
-			GameObject::update(0.0, 0.0);
+			if (active) {
+				set_current_idx(current_element - 1);
+				GameObject::update(0.0, 0.0);
+				active = false;
+			}
 			break;
-
 		default:
 			GameObject::update(0.0, 0.0);
 			break;
 		}
-		t = 0;
-	}
-	
 }
 
 void sprite::render(SDL_Renderer* ren, const Camera& cam) const {
@@ -297,4 +321,8 @@ void sprite::render(SDL_Renderer* ren, const Camera& cam) const {
 			elements.at(current_element)->render(ren, &get_src_rect(), &get_dst_rect(), cam, 1.0f);
 		}
 	}
+}
+
+void sprite::action() {
+	active = true;
 }

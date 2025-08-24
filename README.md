@@ -13,12 +13,13 @@ Made with SDL 3.2.2 and SDL image 3.2.4
 - game object made out of multiple separate game objects,
 - sprites and animations
 - SDL3
+- object click actions
 
 **Features coming soon:**
 
 - controls for in-game objects,
 - Text display support,
-- object click and hold actions
+- object hold and hover actions
 
 **Features coming later:**
 

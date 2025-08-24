@@ -49,7 +49,7 @@ public:
 	virtual void update(double dt, double speed = 400);
 	virtual void render(SDL_Renderer* ren, const Camera& cam) const;
 	virtual ~GameObject() = default;
-	virtual void action() {};
+	virtual void action() { std::cout << "my name " << name << std::endl; };
 	virtual std::unique_ptr<GameObject> clone() const;
 
 	SDL_Texture* get_tex();
@@ -68,6 +68,7 @@ public:
 
 	int  get_layer() const { return layer; }
 	void set_layer(int l) { layer = l; } // call rebuild_order in the container after this
+	virtual bool hit_test(float wx, float wy) const;
 };
 
 class Game_obj_container {
@@ -108,6 +109,8 @@ public:
 	}
 	void update_all(double dtSeconds, double speed = 400);
 	void render_all(SDL_Renderer* ren, const Camera& cam) const;
+
+	GameObject* pick_topmost(float wx, float wy) const;
 };
 
 //Game object cluster -----------------------------------------------------------------------------------
@@ -163,9 +166,10 @@ public:
 
 class sprite : public GameObject {
 	std::vector<std::unique_ptr<sprite_component>> elements;
-	int state = 1; //states in docs
+	int state = 2; //states in docs
 	int current_element = 0;
 	double t = 0;
+	bool active = 0;
 public:
 	using GameObject::GameObject;
 
@@ -182,6 +186,8 @@ public:
 	void update(double dt, double speed = 1) override;
 
 	void render(SDL_Renderer* ren, const Camera& cam) const override;
+
+	void action() override;
 };
 
 #endif

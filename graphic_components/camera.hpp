@@ -23,6 +23,12 @@ inline SDL_FRect WorldToRender(const SDL_FRect& w, const Camera& c) {
 	return SDL_FRect{ w.x - c.x, w.y - c.y, w.w, w.h };
 }
 
+inline SDL_FPoint WindowToWorld(SDL_Renderer* r, float winX, float winY, const Camera& cam) {
+	float rx, ry;
+	SDL_RenderCoordinatesFromWindow(r, winX, winY, &rx, &ry);
+	return SDL_FPoint{ rx + cam.x, ry + cam.y };
+}
+
 static inline SDL_FRect worldToScreen(const SDL_FRect& w, const Camera& c) {
     SDL_FRect s;
     s.w = w.w * c.zoom;

@@ -1,6 +1,6 @@
 ﻿#include "game.hpp"
 
-Game::Game() : tex_mgr(nullptr), screen_w(0), screen_h(0) {}
+Game::Game() : tex_mgr(nullptr), screen_w(0), screen_h(0), renderer(nullptr), window(nullptr), run(false) {}
 
 Game::~Game() { clean(); }
 
@@ -111,10 +111,9 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	obj_container.spawn_as<GameObject>("sussy", "sussy", tex_mgr, 1.0f, true);
 	obj_container.spawn_as<sprite>("s1", "-", tex_mgr, 1.0f, true);
 
-	SDL_Color white{ 255,255,255,255 };
-	tex_mgr.create_text_texture("test1", "fonts/ARIAL.TTF", 24, "Score: 0", white);
+	tex_mgr.create_text_texture("test1", "fonts/ARIAL.TTF", 72, "EPIC TESTING TEXT YEAH", Colors::white);
 
-	obj_container.spawn_as<GameObject>("test1", "test1", tex_mgr, 1.0f, true);
+	obj_container.spawn_as<Button>("test1", "test1", tex_mgr, 500, 500, 1.0f, true, 2);
 
 	sprite& cocacola = *obj_container.get<sprite>("s1");
 
@@ -218,7 +217,7 @@ void Game::handleEvents() {
 	int numkeys = 0;
 	const bool* keys = SDL_GetKeyboardState(&numkeys);
 
-	const int pan = 600 / 60; // original step; make dt-based later
+	const int pan = 600 / 60; // original step; make dt-based if required
 	cam.x += (keys[SDL_SCANCODE_D] ? pan : 0) - (keys[SDL_SCANCODE_A] ? pan : 0);
 	cam.y += (keys[SDL_SCANCODE_S] ? pan : 0) - (keys[SDL_SCANCODE_W] ? pan : 0);
 }

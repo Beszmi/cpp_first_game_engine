@@ -74,9 +74,9 @@ public:
 
 	virtual bool hit_test(float wx, float wy) const;
 
-	virtual void on_hover_enter() {}
+	virtual void on_hover_enter() { hover = true; }
 	virtual void on_hover() {}
-	virtual void on_hover_exit() {}
+	virtual void on_hover_exit() { hover = false; }
 	virtual void on_hold_start(int button) {}
 	virtual void on_hold(double seconds, int button) {}
 	virtual void on_hold_end(double seconds, int button, bool canceled) {}
@@ -199,8 +199,6 @@ public:
 	void render(SDL_Renderer* ren, const Camera& cam) const override;
 
 	void action() override;
-	void on_hover_enter() override;
-	void on_hover_exit() override;
 };
 
 #endif

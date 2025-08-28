@@ -346,11 +346,3 @@ void sprite::render(SDL_Renderer* ren, const Camera& cam) const {
 void sprite::action() {
 	active = true;
 }
-
-void sprite::on_hover_enter() {
-	hover = true;
-}
-
-void sprite::on_hover_exit() {
-	hover = false;
-}

@@ -10,6 +10,7 @@
 #include "game_obj.hpp"
 #include "graphic_components/tilemap.hpp"
 #include "graphic_components/camera.hpp"
+#include "text.hpp"
 
 class Game {
 	bool run;

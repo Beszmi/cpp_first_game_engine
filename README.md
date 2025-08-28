@@ -14,11 +14,12 @@ Made with SDL 3.2.2 and SDL image 3.2.4
 - sprites and animations
 - SDL3
 - object click actions
+- Text display support
 
 **Features coming soon:**
 
 - controls for in-game objects,
-- Text display support,
+- expanding text support features
 - object hold and hover actions
 
 **Features coming later:**

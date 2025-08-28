@@ -137,4 +137,114 @@ void texture_manager::clear() {
         SDL_DestroyTexture(texture);
     }
     textures.clear();
+    text_meta.clear();
+
+    for (auto& [key, font] : fonts) {
+        TTF_CloseFont(font);
+    }
+    fonts.clear();
+}
+
+std::string texture_manager::font_key(const std::string& family, float pt) {
+    char buf[64]; SDL_snprintf(buf, sizeof(buf), "@%.2f", pt);
+    return family + buf;
+}
+
+TTF_Font* texture_manager::get_or_load_font(const std::string& family, float pt) {
+    auto key = font_key(family, pt);
+    if (auto it = fonts.find(key); it != fonts.end()) return it->second;
+    return load_font(family, pt);
+}
+
+TTF_Font* texture_manager::load_font(const std::string& family, float pt) {
+    auto key = font_key(family, pt);
+    if (fonts.count(key)) return fonts[key];
+
+    TTF_Font* f = TTF_OpenFont(family.c_str(), pt);
+    if (!f) {
+        SDL_Log("TTF_OpenFont failed (%s @ %.2fpt): %s", family.c_str(), pt, SDL_GetError());
+        return nullptr;
+    }
+    fonts[key] = f;
+    return f;
+}
+
+void texture_manager::unload_font(const std::string& family, float pt) {
+    auto key = font_key(family, pt);
+    if (auto it = fonts.find(key); it != fonts.end()) {
+        TTF_CloseFont(it->second);
+        fonts.erase(it);
+    }
+}
+bool texture_manager::has_font(const std::string& family, float pt) const {
+    return fonts.count(font_key(family, pt)) != 0;
+}
+
+// Build or rebuild the SDL_Texture for a TextEntry
+bool texture_manager::rerender_text_texture(TextEntry& e) {
+    TTF_Font* font = get_or_load_font(e.family, e.ptsize);
+    if (!font) return false;
+
+    SDL_Surface* surf = nullptr;
+    surf = (e.wrap_width > 0)
+         ? TTF_RenderText_Blended_Wrapped(font, e.text.c_str(), e.text.size(), e.color, e.wrap_width)
+         : TTF_RenderText_Blended(font, e.text.c_str(), e.text.size(), e.color);
+    
+    if (!surf) {
+        SDL_Log("TTF_RenderText_* failed: %s", SDL_GetError());
+        return false;
+    }
+
+    // Replace existing texture if present
+    auto it = textures.find(e.name);
+    if (it != textures.end() && it->second) {
+        SDL_DestroyTexture(it->second);
+    }
+
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surf);
+    SDL_DestroySurface(surf);
+    if (!tex) {
+        SDL_Log("CreateTextureFromSurface failed: %s", SDL_GetError());
+        return false;
+    }
+    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+    textures[e.name] = tex;
+    return true;
+}
+
+SDL_Texture* texture_manager::create_text_texture(const std::string& name, const std::string& family, float ptsize, const std::string& text, SDL_Color color, int wrap_width, const std::string& quality) {
+    TextEntry meta;
+    meta.name = name;
+    meta.family = family;
+    meta.ptsize = ptsize;
+    meta.text = text;
+    meta.color = color;
+    meta.wrap_width = wrap_width;
+    meta.quality = quality;
+
+    if (!rerender_text_texture(meta)) return nullptr;
+    text_meta[name] = std::move(meta);
+    return textures[name];
+}
+
+
+bool texture_manager::set_text_string(const std::string& name, const std::string& new_text) {
+    auto it = text_meta.find(name); if (it == text_meta.end()) return false;
+    if (it->second.text == new_text) return true; //skip
+    it->second.text = new_text;
+    return rerender_text_texture(it->second);
+}
+
+bool texture_manager::set_text_color(const std::string& name, SDL_Color new_color) {
+    auto it = text_meta.find(name); if (it == text_meta.end()) return false;
+    if (!std::memcmp(&it->second.color, &new_color, sizeof(SDL_Color))) return true;
+    it->second.color = new_color;
+    return rerender_text_texture(it->second);
+}
+
+bool texture_manager::set_text_size(const std::string& name, float new_ptsize) {
+    auto it = text_meta.find(name); if (it == text_meta.end()) return false;
+    if (it->second.ptsize == new_ptsize) return true;
+    it->second.ptsize = new_ptsize;
+    return rerender_text_texture(it->second);
 }

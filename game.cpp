@@ -39,8 +39,6 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	int target_w = width;
 	int target_h = height;
 	int target_x = -1, target_y = -1;
-	SDL_SetWindowMinimumSize(window, 640, 360);
-	SDL_SetWindowMaximumSize(window, 3840, 2160);
 	SDL_WindowFlags wflags = SDL_WINDOW_HIGH_PIXEL_DENSITY;
 	if (fullscreen) {
 		wflags |= SDL_WINDOW_FULLSCREEN;
@@ -80,18 +78,20 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		run = false;
 	}
 
-	if (!fullscreen && target_x >= 0 && target_y >= 0) {
-		SDL_SetWindowPosition(window, target_x, target_y);
-		run = false;
-	}
-
 	if (!SDL_SetRenderVSync(renderer, SDL_RENDERER_VSYNC_ADAPTIVE)) {
 		//if adaptive not available unlimited fps
 		SDL_SetRenderVSync(renderer, 0);
 	}
-
+	SDL_SetWindowMinimumSize(window, 640, 360);
+	SDL_SetWindowMaximumSize(window, 3840, 2160);
 	std::cout << "SDL init + window/renderer created!\n";
 	SDL_GetWindowSizeInPixels(window, &screen_w, &screen_h);
+
+	if (!TTF_Init()) {
+		std::cerr << "TTF_Init failed: " << SDL_GetError() << "\n";
+		run = false;
+		return;
+	}
 
 	tex_mgr.set_renderer(renderer);
 	tex_mgr.load_textures_from_folder("assets");
@@ -110,6 +110,11 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	obj_container.spawn_as<streched_bg_obj>("-", "-", tex_mgr, 1.0f, false, -1);
 	obj_container.spawn_as<GameObject>("sussy", "sussy", tex_mgr, 1.0f, true);
 	obj_container.spawn_as<sprite>("s1", "-", tex_mgr, 1.0f, true);
+
+	SDL_Color white{ 255,255,255,255 };
+	tex_mgr.create_text_texture("test1", "fonts/ARIAL.TTF", 24, "Score: 0", white);
+
+	obj_container.spawn_as<GameObject>("test1", "test1", tex_mgr, 1.0f, true);
 
 	sprite& cocacola = *obj_container.get<sprite>("s1");
 
@@ -242,6 +247,8 @@ void Game::render() {
 }
 
 void Game::clean() {
+	tex_mgr.clear();
+	TTF_Quit();
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();

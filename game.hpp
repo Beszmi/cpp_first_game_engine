@@ -5,6 +5,7 @@
 #include <iostream>
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include "graphic_components/texture_manager.hpp"
 #include "game_obj.hpp"
 #include "graphic_components/tilemap.hpp"
@@ -22,8 +23,8 @@ class Game {
 	Camera cam;
 
 	GameObject* hovered = nullptr;
-	GameObject* held_obj = nullptr;
-	int held_button = 0;
+	//GameObject* held_obj = nullptr;
+	//int held_button = 0;
 	Uint64 hold_t0_ms = 0;
 	bool holding = false;
 public:

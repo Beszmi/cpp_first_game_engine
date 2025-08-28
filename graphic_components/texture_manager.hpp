@@ -9,12 +9,29 @@
 #include <algorithm>
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
+#include <SDL3_ttf/SDL_ttf.h>
+
 using namespace std;
 
 class texture_manager {
 	unordered_map<string, SDL_Texture*> textures;
+    unordered_map<std::string, TTF_Font*> fonts;
 	SDL_Renderer* renderer;
     SDL_Texture* missing_texture = nullptr;
+    struct TextEntry {
+        std::string name;
+        std::string family;
+        float       ptsize = 16;
+        SDL_Color   color{ 255,255,255,255 };
+        int         wrap_width = 0;
+        std::string text;
+        std::string quality = "blended";
+    };
+    std::unordered_map<std::string, TextEntry> text_meta;
+
+    static std::string font_key(const std::string& family, float pt);
+    TTF_Font* get_or_load_font(const std::string& family, float pt);
+    bool rerender_text_texture(TextEntry& e);
 public:
     texture_manager(SDL_Renderer* renderer);
     ~texture_manager();
@@ -28,6 +45,18 @@ public:
     void unload_texture(const string& name);
     bool has(const string& name);
     void clear();
+
+    //text
+    TTF_Font* load_font(const std::string& family, float pt);
+    void        unload_font(const std::string& family, float pt);
+    bool        has_font(const std::string& family, float pt) const;
+
+    SDL_Texture* create_text_texture(const std::string& name, const std::string& family, float ptsize, const std::string& text, SDL_Color color, int wrap_width = 0, const std::string& quality = "blended");
+
+    bool set_text_string(const std::string& name, const std::string& new_text);
+    bool set_text_color(const std::string& name, SDL_Color new_color);
+    bool set_text_size(const std::string& name, float new_ptsize);
+    bool set_text_wrap(const std::string& name, int new_wrap);
 };
 
 #endif

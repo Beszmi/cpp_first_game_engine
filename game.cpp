@@ -111,7 +111,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	obj_container.spawn_as<GameObject>("sussy", "sussy", tex_mgr, 1.0f, true);
 	obj_container.spawn_as<sprite>("s1", "-", tex_mgr, 1.0f, true);
 
-	tex_mgr.create_text_texture("test1", "fonts/ARIAL.TTF", 72, "EPIC TESTING TEXT YEAH", Colors::white);
+	tex_mgr.create_text_texture("test1", "fonts/ARIAL.TTF", 72, "EPIC TESTING TEXT YEAH", Colors::white, Colors::black);
 
 	obj_container.spawn_as<Button>("test1", "test1", tex_mgr, 500, 500, 1.0f, true, 2);
 

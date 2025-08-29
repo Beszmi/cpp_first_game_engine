@@ -185,24 +185,62 @@ bool texture_manager::rerender_text_texture(TextEntry& e) {
     TTF_Font* font = get_or_load_font(e.family, e.ptsize);
     if (!font) return false;
 
-    SDL_Surface* surf = nullptr;
-    surf = (e.wrap_width > 0)
-         ? TTF_RenderText_Blended_Wrapped(font, e.text.c_str(), e.text.size(), e.color, e.wrap_width)
-         : TTF_RenderText_Blended(font, e.text.c_str(), e.text.size(), e.color);
-    
-    if (!surf) {
-        SDL_Log("TTF_RenderText_* failed: %s", SDL_GetError());
+    SDL_Surface* text = (e.wrap_width > 0)
+        ? TTF_RenderText_Blended_Wrapped(font, e.text.c_str(), e.text.size(), e.color, e.wrap_width)
+        : TTF_RenderText_Blended(font, e.text.c_str(), e.text.size(), e.color);
+    if (!text) {
+        SDL_Log("TTF_RenderText failed: %s", SDL_GetError());
         return false;
     }
 
-    // Replace existing texture if present
-    auto it = textures.find(e.name);
-    if (it != textures.end() && it->second) {
-        SDL_DestroyTexture(it->second);
+    // --- compute outer size ---
+    const int bw = e.border_enabled ? e.border_thickness : 0;
+    const int padw = e.pad_x, padh = e.pad_y;
+    const int inner_w = text->w + 2*padw;
+    const int inner_h = text->h + 2*padh;
+    const int out_w   = inner_w + 2*bw;
+    const int out_h   = inner_h + 2*bw;
+
+    SDL_Surface* out = SDL_CreateSurface(out_w, out_h, SDL_PIXELFORMAT_RGBA32);
+    if (!out) {
+        SDL_DestroySurface(text);
+        SDL_Log("SDL_CreateSurface failed: %s", SDL_GetError());
+        return false;
     }
 
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surf);
-    SDL_DestroySurface(surf);
+    // Start fully transparent
+    Uint32 transparent = SDL_MapSurfaceRGBA(out, 0,0,0,0);
+    SDL_FillSurfaceRect(out, nullptr, transparent);
+
+    // Background (if enabled)
+    if (e.bg_enabled && e.bg_color.a > 0) {
+        SDL_Rect bg{ bw, bw, inner_w, inner_h };
+        Uint32 bgpx = SDL_MapSurfaceRGBA(out, e.bg_color.r, e.bg_color.g, e.bg_color.b, e.bg_color.a);
+        SDL_FillSurfaceRect(out, &bg, bgpx);
+    }
+
+    // Border (if enabled)
+    if (e.border_enabled && bw > 0 && e.border_color.a > 0) {
+        Uint32 bpx = SDL_MapSurfaceRGBA(out, e.border_color.r, e.border_color.g, e.border_color.b, e.border_color.a);
+        SDL_Rect top   { 0,           0,        out_w, bw };
+        SDL_Rect bottom{ 0,  out_h - bw,        out_w, bw };
+        SDL_Rect left  { 0,           0,        bw,    out_h };
+        SDL_Rect right { out_w - bw,  0,        bw,    out_h };
+        SDL_FillSurfaceRect(out, &top,    bpx);
+        SDL_FillSurfaceRect(out, &bottom, bpx);
+        SDL_FillSurfaceRect(out, &left,   bpx);
+        SDL_FillSurfaceRect(out, &right,  bpx);
+    }
+    SDL_Rect dst{ bw + padw, bw + padh, text->w, text->h };
+    SDL_BlitSurface(text, nullptr, out, &dst);
+
+    // Replace existing texture
+    if (auto it = textures.find(e.name); it != textures.end() && it->second) {
+        SDL_DestroyTexture(it->second);
+    }
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, out);
+    SDL_DestroySurface(text);
+    SDL_DestroySurface(out);
     if (!tex) {
         SDL_Log("CreateTextureFromSurface failed: %s", SDL_GetError());
         return false;
@@ -212,13 +250,18 @@ bool texture_manager::rerender_text_texture(TextEntry& e) {
     return true;
 }
 
-SDL_Texture* texture_manager::create_text_texture(const std::string& name, const std::string& family, float ptsize, const std::string& text, SDL_Color color, int wrap_width, const std::string& quality) {
+
+SDL_Texture* texture_manager::create_text_texture(const std::string& name, const std::string& family, float ptsize, const std::string& text, const SDL_Color& color, const SDL_Color& bg_color,  int wrap_width, const std::string& quality) {
     TextEntry meta;
     meta.name = name;
     meta.family = family;
     meta.ptsize = ptsize;
     meta.text = text;
     meta.color = color;
+    if (bg_color.a != 0) {
+        meta.bg_enabled = true;
+        meta.bg_color = bg_color;
+    }
     meta.wrap_width = wrap_width;
     meta.quality = quality;
 

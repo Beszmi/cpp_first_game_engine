@@ -26,6 +26,12 @@ class texture_manager {
         int         wrap_width = 0;
         std::string text;
         std::string quality = "blended";
+        bool        bg_enabled = false;
+        SDL_Color   bg_color{ 0,0,0,0 };
+        bool        border_enabled = false;
+        SDL_Color   border_color{ 0,0,0,0 };
+        int         border_thickness = 0;
+        int         pad_x = 0, pad_y = 0;
     };
     std::unordered_map<std::string, TextEntry> text_meta;
 
@@ -51,12 +57,14 @@ public:
     void        unload_font(const std::string& family, float pt);
     bool        has_font(const std::string& family, float pt) const;
 
-    SDL_Texture* create_text_texture(const std::string& name, const std::string& family, float ptsize, const std::string& text, SDL_Color color, int wrap_width = 0, const std::string& quality = "blended");
+    SDL_Texture* create_text_texture(const std::string& name, const std::string& family, float ptsize, const std::string& text, const SDL_Color& color, const SDL_Color& bg_color = {0,0,0,0}, int wrap_width = 0, const std::string& quality = "blended");
 
     bool set_text_string(const std::string& name, const std::string& new_text);
     bool set_text_color(const std::string& name, SDL_Color new_color);
     bool set_text_size(const std::string& name, float new_ptsize);
-    bool set_text_wrap(const std::string& name, int new_wrap);
+    //bool set_text_wrap(const std::string& name, int new_wrap);
+    bool set_text_background(const std::string& name, bool enabled, SDL_Color color, int pad_x = 0, int pad_y = 0);
+    bool set_text_border(const std::string& name, bool enabled, SDL_Color color, int thickness = 1);
 };
 
 #endif

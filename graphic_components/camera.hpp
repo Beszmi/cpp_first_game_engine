@@ -67,4 +67,22 @@ struct Transform {
 	}
 };
 
+inline SDL_FPoint ScreenPercentToWindow(SDL_Renderer* r, float px, float py) {
+	int w = 0, h = 0;
+	SDL_GetRenderOutputSize(r, &w, &h);
+	return SDL_FPoint{ px * static_cast<float>(w), py * static_cast<float>(h) };
+}
+
+inline SDL_FPoint ScreenPercentToRender(SDL_Renderer* r, float px, float py) {
+	const SDL_FPoint win = ScreenPercentToWindow(r, px, py);
+	float rx = 0.f, ry = 0.f;
+	SDL_RenderCoordinatesFromWindow(r, win.x, win.y, &rx, &ry);
+	return SDL_FPoint{ rx, ry };
+}
+
+inline SDL_FPoint ScreenPercentToWorld(SDL_Renderer* r, float px, float py, const Camera& cam) {
+	const SDL_FPoint rend = ScreenPercentToRender(r, px, py);
+	return SDL_FPoint{ rend.x + cam.x, rend.y + cam.y };
+}
+
 #endif

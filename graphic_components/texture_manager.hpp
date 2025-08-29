@@ -62,9 +62,9 @@ public:
     bool set_text_string(const std::string& name, const std::string& new_text);
     bool set_text_color(const std::string& name, SDL_Color new_color);
     bool set_text_size(const std::string& name, float new_ptsize);
-    //bool set_text_wrap(const std::string& name, int new_wrap);
-    bool set_text_background(const std::string& name, bool enabled, SDL_Color color, int pad_x = 0, int pad_y = 0);
-    bool set_text_border(const std::string& name, bool enabled, SDL_Color color, int thickness = 1);
+    bool set_text_wrap(const std::string& name, int new_wrap);
+    bool set_text_background(const std::string& name, bool enabled, SDL_Color color = { 0,0,0,0 }, int pad_x = 0, int pad_y = 0);
+    bool set_text_border(const std::string& name, bool enabled, SDL_Color color = { 0,0,0,0 }, int thickness = 1);
 };
 
 #endif

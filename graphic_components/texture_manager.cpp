@@ -258,7 +258,7 @@ SDL_Texture* texture_manager::create_text_texture(const std::string& name, const
     meta.ptsize = ptsize;
     meta.text = text;
     meta.color = color;
-    if (bg_color.a != 0) {
+    if (bg_color.a > 0) {
         meta.bg_enabled = true;
         meta.bg_color = bg_color;
     }
@@ -289,5 +289,33 @@ bool texture_manager::set_text_size(const std::string& name, float new_ptsize) {
     auto it = text_meta.find(name); if (it == text_meta.end()) return false;
     if (it->second.ptsize == new_ptsize) return true;
     it->second.ptsize = new_ptsize;
+    return rerender_text_texture(it->second);
+}
+
+bool texture_manager::set_text_background(const std::string& name, bool enabled, SDL_Color color, int pad_x, int pad_y) {
+    auto it = text_meta.find(name); if (it == text_meta.end()) return false;
+    it->second.bg_enabled = enabled;
+    if (enabled) {
+        it->second.bg_color = color;
+        it->second.pad_x = pad_x;
+        it->second.pad_y = pad_y;
+    }
+    return rerender_text_texture(it->second);
+}
+
+bool texture_manager::set_text_wrap(const std::string& name, int new_wrap) {
+    auto it = text_meta.find(name); if (it == text_meta.end()) return false;
+    if (it->second.wrap_width == new_wrap) return true;
+    it->second.wrap_width = new_wrap;
+    return rerender_text_texture(it->second);
+}
+
+bool texture_manager::set_text_border(const std::string& name, bool enabled, SDL_Color color, int thickness) {
+    auto it = text_meta.find(name); if (it == text_meta.end()) return false;
+    it->second.border_enabled = enabled;
+    if (enabled) {
+        it->second.border_color = color;
+        it->second.border_thickness = thickness;
+    }
     return rerender_text_texture(it->second);
 }

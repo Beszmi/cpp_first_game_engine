@@ -29,11 +29,14 @@ class Game {
 	//int held_button = 0;
 	Uint64 hold_t0_ms = 0;
 	bool holding = false;
+	SDL_Cursor* default_cursor;
+	SDL_Cursor* pointer_cursor;
 public:
 	Game();
 	~Game();
 
 	void init(const char *title, int xpos, int ypos, int width, int height, bool fullscreen);
+	void set_cursors(SDL_Cursor* default_cursor_in, SDL_Cursor* pointer_cursor_in);
 	void handleEvents();
 	void update(double dtSeconds);
 	void render();

@@ -220,8 +220,18 @@ void GameObject_cluster::render(SDL_Renderer* ren, const Camera& cam) const {
 	}
 }
 
+// BUTTONS
+
 void Button::update(double dt, double speed) {
 	GameObject::update(0.0, 0.0);
+}
+
+void Button::on_hover_enter(SDL_Cursor* pointer_cursor) {
+	SDL_SetCursor(pointer_cursor);
+}
+
+void Button::on_hover_exit(SDL_Cursor* default_cursor) {
+	SDL_SetCursor(default_cursor);
 }
 
 //sprite objs

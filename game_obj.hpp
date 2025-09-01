@@ -74,9 +74,9 @@ public:
 
 	virtual bool hit_test(float wx, float wy) const;
 
-	virtual void on_hover_enter() { hover = true; }
+	virtual void on_hover_enter(SDL_Cursor* pointer_cursor) { hover = true; }
 	virtual void on_hover() {}
-	virtual void on_hover_exit() { hover = false; }
+	virtual void on_hover_exit(SDL_Cursor* default_cursor) { hover = false; }
 	virtual void on_hold_start(int button) {}
 	virtual void on_hold(double seconds, int button) {}
 	virtual void on_hold_end(double seconds, int button, bool canceled) {}
@@ -153,6 +153,8 @@ public:
 
 	void update(double dt, double speed = 400) override;
 	using GameObject::render;
+	void on_hover_enter(SDL_Cursor* pointer_cursor) override;
+	void on_hover_exit(SDL_Cursor* default_cursor) override;
 
 	~Button() = default;
 };

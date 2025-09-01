@@ -169,6 +169,11 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	run = true;
 }
 
+void Game::set_cursors(SDL_Cursor* default_cursor_in, SDL_Cursor* pointer_cursor_in) {
+	default_cursor = default_cursor_in;
+	pointer_cursor = pointer_cursor_in;
+}
+
 void Game::handleEvents() {
 	SDL_Event e;
 	while (SDL_PollEvent(&e)) {
@@ -206,9 +211,9 @@ void Game::handleEvents() {
 			GameObject* hit = obj_container.pick_topmost(W.x, W.y);
 
 			if (hit != hovered) {
-				if (hovered) hovered->on_hover_exit();
+				if (hovered) hovered->on_hover_exit(default_cursor);
 				hovered = hit;
-				if (hovered) hovered->on_hover_enter();
+				if (hovered) hovered->on_hover_enter(pointer_cursor);
 			}
 			else if (hovered) {
 				hovered->on_hover();

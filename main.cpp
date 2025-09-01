@@ -13,6 +13,9 @@ int main(int argc, char *argv[]) {
 	Uint64 last = now;
 	const double freq = static_cast<double>(SDL_GetPerformanceFrequency());
 	const double max_dt = 0.25;
+	SDL_Cursor* default_cursor = SDL_GetDefaultCursor();
+	SDL_Cursor* pointer_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_POINTER);
+	game1.set_cursors(default_cursor, pointer_cursor);
 
 	while (game1.running()) {
 		now = SDL_GetPerformanceCounter();

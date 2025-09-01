@@ -120,6 +120,7 @@ public:
 	}
 	void update_all(double dtSeconds, double speed = 400);
 	void render_all(SDL_Renderer* ren, const Camera& cam) const;
+	void set_scale_all(float new_scale);
 
 	GameObject* pick_topmost(float wx, float wy) const;
 };

@@ -1,7 +1,7 @@
 # cpp_first_game_engine
 
 Made with SDL 3.2.2 and SDL image 3.2.4
-
+Documentation can be found in the docs folder of the project
 
 **Current features:**
 
@@ -15,6 +15,7 @@ Made with SDL 3.2.2 and SDL image 3.2.4
 - SDL3
 - object click, hover actions
 - Text display support
+- objects scaling with screen resolution
 
 **Features coming soon:**
 

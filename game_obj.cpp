@@ -159,6 +159,12 @@ void Game_obj_container::render_all(SDL_Renderer* ren, const Camera& cam) const 
 	}
 }
 
+void Game_obj_container::set_scale_all(float new_scale) {
+	for (auto& [_, obj] : objects) {
+		obj->set_scale(new_scale);
+	}
+}
+
 GameObject* Game_obj_container::pick_topmost(float wx, float wy) const {
 	if (order_dirty) { rebuild_order(); order_dirty = false; }
 	for (auto it = render_order_.rbegin(); it != render_order_.rend(); ++it) {

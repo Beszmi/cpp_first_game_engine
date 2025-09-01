@@ -22,6 +22,7 @@ class Game {
 	std::vector<std::unique_ptr<tilemap>> maps;
 	int screen_w, screen_h;
 	Camera cam;
+	float screen_scale_factor = 1.0f;
 
 	GameObject* hovered = nullptr;
 	//GameObject* held_obj = nullptr;

@@ -73,6 +73,19 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		return;
 	}
 
+	if (target_w <= 1280 && target_h <= 720) {
+		screen_scale_factor = 0.75;
+	}
+	else if (target_w <= 1920 && target_h <= 1080) {
+		screen_scale_factor = 1;
+	}
+	else if (target_w <= 2560 && target_h <= 1440) {
+		screen_scale_factor = 1.5;
+	}
+	else if (target_w <= 3840 && target_h <= 2160) {
+		screen_scale_factor = 2;
+	}
+
 	if (!fullscreen && target_x >= 0 && target_y >= 0) {
 		SDL_SetWindowPosition(window, target_x, target_y);
 		run = false;
@@ -170,6 +183,22 @@ void Game::handleEvents() {
 			break;
 		case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
 			SDL_GetWindowSizeInPixels(window, &screen_w, &screen_h);
+			break;
+		case SDL_EVENT_WINDOW_RESIZED:
+			SDL_GetWindowSizeInPixels(window, &screen_w, &screen_h);
+			if (screen_w <= 1280 && screen_h <= 720) {
+				screen_scale_factor = 0.75;
+			}
+			else if (screen_w <= 1920 && screen_h <= 1080) {
+				screen_scale_factor = 1;
+			}
+			else if (screen_w <= 2560 && screen_h <= 1440) {
+				screen_scale_factor = 1.5;
+			}
+			else if (screen_w <= 3840 && screen_h <= 2160) {
+				screen_scale_factor = 2;
+			}
+			obj_container.set_scale_all(screen_scale_factor);
 			break;
 		case SDL_EVENT_MOUSE_MOTION: {
 			SDL_FPoint W = WindowToWorld(renderer, e.motion.x, e.motion.y, cam);

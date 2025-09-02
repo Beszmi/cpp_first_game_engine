@@ -31,6 +31,9 @@ class Game {
 	bool holding = false;
 	SDL_Cursor* default_cursor;
 	SDL_Cursor* pointer_cursor;
+	bool need_update = false;
+	int result;
+	int current_scene = 0;
 public:
 	Game();
 	~Game();

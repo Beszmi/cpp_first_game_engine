@@ -260,6 +260,16 @@ void Game::handleEvents() {
 
 void Game::update(double dtSeconds) {
 	//cnt++;
+	if (need_update) {
+		if (current_scene == 1) {
+			obj_container.layer_switch(1, true);
+		}
+		else if (current_scene == 0) {
+			obj_container.layer_switch(1, false);
+		}
+		obj_container.rebuild_order();
+		need_update = false;
+	}
 	obj_container.update_all(dtSeconds, 400);
 }
 

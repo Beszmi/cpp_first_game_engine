@@ -54,7 +54,7 @@ public:
 	virtual void update(double dt, double speed = 400);
 	virtual void render(SDL_Renderer* ren, const Camera& cam) const;
 	virtual ~GameObject() = default;
-	virtual void action() { std::cout << "my name " << name << std::endl; };
+	virtual int action() { std::cout << "my name " << name << std::endl; return -999; };
 	virtual std::unique_ptr<GameObject> clone() const;
 
 	SDL_Texture* get_tex();
@@ -123,13 +123,14 @@ public:
 	void update_all(double dtSeconds, double speed = 400);
 	void render_all(SDL_Renderer* ren, const Camera& cam) const;
 	void set_scale_all(float new_scale);
+	void layer_switch(int layer, bool enabled);
 
 	GameObject* pick_topmost(float wx, float wy) const;
 };
 
 //Game object cluster -----------------------------------------------------------------------------------
 
-class GameObject_cluster: public GameObject {
+class GameObject_cluster : public GameObject {
 	std::vector<std::unique_ptr<GameObject>> items;
 public:
 	using GameObject::GameObject;
@@ -147,6 +148,9 @@ public:
 // DERIVED OBJECTS --------------------------------------------------------------------------------------
 
 class Button : public GameObject {
+	bool enabled = true;
+protected:
+	int var;
 public:
 	using GameObject::GameObject;
 	//void action()  override { std::cout << "test"; }
@@ -156,22 +160,23 @@ public:
 	using GameObject::render;
 	void on_hover_enter(SDL_Cursor* pointer_cursor) override;
 	void on_hover_exit(SDL_Cursor* default_cursor) override;
+	void switch_enable(bool new_value) { enabled = new_value; }
+	bool is_enabled() const { return enabled; }
 
 	~Button() = default;
 };
 
-class Text_Button : public GameObject {
+class Text_Button : public Button {
 	texture_manager& tex_mgr;
 public:
-	Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, float scale = 1.0f, bool show_it = false, int layer_in = 0);
-	Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, int x, int y, float scale = 1.0f, bool show_it = false, int layer_in = 0);
-	Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, GameObject_cluster* prn, float scale = 1.0f, bool show_it = false, int layer_in = 0);
-	Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, int x, int y, GameObject_cluster* prn, float scale = 1.0f, bool show_it = false, int layer_in = 0);
-	//void action()  override { std::cout << "test"; }
+	Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, float scale = 1.0f, bool show_it = false, int layer_in = 0, int variable = 0);
+	Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, int x, int y, float scale = 1.0f, bool show_it = false, int layer_in = 0, int variable = 0);
+	Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, GameObject_cluster* prn, float scale = 1.0f, bool show_it = false, int layer_in = 0, int variable = 0);
+	Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, int x, int y, GameObject_cluster* prn, float scale = 1.0f, bool show_it = false, int layer_in = 0, int variable = 0);
+	int action() override;
 	std::unique_ptr<GameObject> clone() const override { return std::make_unique<Text_Button>(*this); }
 
 	void update(double dt, double speed = 400) override;
-	using GameObject::render;
 	void on_hover_enter(SDL_Cursor* pointer_cursor) override;
 	void on_hover_exit(SDL_Cursor* default_cursor) override;
 
@@ -220,7 +225,7 @@ public:
 
 	void render(SDL_Renderer* ren, const Camera& cam) const override;
 
-	void action() override;
+	int action() override;
 };
 
 #endif

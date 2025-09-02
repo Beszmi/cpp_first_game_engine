@@ -1,7 +1,7 @@
 #include "game_obj.hpp"
 
 //BASE OBJECT
-GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, float scale, bool show_it, int layer_in): name(name), scale(scale), show(show_it), obj_tex(nullptr), layer(layer_in) {
+GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, float scale, bool show_it, int layer_in) : name(name), scale(scale), show(show_it), obj_tex(nullptr), layer(layer_in) {
 	if (texture != "-") {
 		obj_tex = tex_mgr.get_texture(texture);
 		if (!obj_tex) {
@@ -31,7 +31,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), w, h };
 }
 
-GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, float scale, bool show_it, int layer_in): name(name), scale(scale), show(show_it), obj_tex(nullptr), layer(layer_in) {
+GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, float scale, bool show_it, int layer_in) : name(name), scale(scale), show(show_it), obj_tex(nullptr), layer(layer_in) {
 	if (texture != "-") {
 		obj_tex = tex_mgr.get_texture(texture);
 		if (!obj_tex) {
@@ -48,7 +48,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), w, h };
 }
 
-GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, float scale, bool show_it, int layer_in): name(name), scale(scale), show(show_it), obj_tex(nullptr), layer(layer_in) {
+GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, float scale, bool show_it, int layer_in) : name(name), scale(scale), show(show_it), obj_tex(nullptr), layer(layer_in) {
 	if (texture != "-") {
 		obj_tex = tex_mgr.get_texture(texture);
 		if (!obj_tex) {
@@ -62,7 +62,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	if (obj_tex) SDL_GetTextureSize(obj_tex, &w, &h);
 	transform.computeWorld();
 	src_rect = { 0, 0, w, h };
-	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), w, h};
+	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), w, h };
 }
 
 GameObject::GameObject(const GameObject& rhs) : name(rhs.name), obj_tex(rhs.obj_tex), transform(rhs.transform), src_rect(rhs.src_rect), dst_rect(rhs.dst_rect), scale(rhs.scale), show(rhs.show), layer(rhs.layer) {}
@@ -165,6 +165,14 @@ void Game_obj_container::set_scale_all(float new_scale) {
 	}
 }
 
+void Game_obj_container::layer_switch(int layer, bool enabled) {
+	for (auto& [_, obj] : objects) {
+		if (obj->get_layer() == layer) {
+			obj->set_show(enabled);
+		}
+	}
+}
+
 GameObject* Game_obj_container::pick_topmost(float wx, float wy) const {
 	if (order_dirty) { rebuild_order(); order_dirty = false; }
 	for (auto it = render_order_.rbegin(); it != render_order_.rend(); ++it) {
@@ -236,17 +244,32 @@ void Button::on_hover_exit(SDL_Cursor* default_cursor) {
 
 // TEXT BUTTONS
 
-Text_Button::Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, float scale, bool show_it, int layer_in) 
-	: GameObject(name, texture, tex_mgr_in, scale, show_it, layer_in), tex_mgr(tex_mgr_in) {}
+Text_Button::Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, float scale, bool show_it, int layer_in, int variable)
+	: Button(name, texture, tex_mgr_in, scale, show_it, layer_in), tex_mgr(tex_mgr_in) {
+	var = variable;
+}
 
-Text_Button::Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, int x, int y, float scale, bool show_it, int layer_in)
-	: GameObject(name, texture, tex_mgr_in, x, y, scale, show_it, layer_in), tex_mgr(tex_mgr_in) {}
+Text_Button::Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, int x, int y, float scale, bool show_it, int layer_in, int variable)
+	: Button(name, texture, tex_mgr_in, x, y, scale, show_it, layer_in), tex_mgr(tex_mgr_in) {
+	var = variable;
+}
 
-Text_Button::Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, GameObject_cluster* prn, float scale, bool show_it, int layer_in) 
-	: GameObject(name, texture, tex_mgr_in, prn, scale, show_it, layer_in), tex_mgr(tex_mgr_in) {}
+Text_Button::Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, GameObject_cluster* prn, float scale, bool show_it, int layer_in, int variable)
+	: Button(name, texture, tex_mgr_in, prn, scale, show_it, layer_in), tex_mgr(tex_mgr_in) {
+	var = variable;
+}
 
-Text_Button::Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, int x, int y, GameObject_cluster* prn, float scale, bool show_it, int layer_in)
-	: GameObject(name, texture, tex_mgr_in, x, y, prn, scale, show_it, layer_in), tex_mgr(tex_mgr_in) {}
+Text_Button::Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, int x, int y, GameObject_cluster* prn, float scale, bool show_it, int layer_in, int variable)
+	: Button(name, texture, tex_mgr_in, x, y, prn, scale, show_it, layer_in), tex_mgr(tex_mgr_in) {
+	var = variable;
+}
+
+int Text_Button::action() {
+	if (var > -1 && var < 3) {
+		//return rps::play(var);
+	}
+	return var;
+}
 
 void Text_Button::update(double dt, double speed) {
 	GameObject::update(0.0, 0.0);
@@ -331,67 +354,67 @@ void sprite::set_current_idx(int idx) {
 	if (idx >= static_cast<int>(elements.size())) idx = 0;
 	current_element = idx;
 }
- 
+
 
 void sprite::update(double dt, double speed) {
-	switch (state){
-		case 0:
+	switch (state) {
+	case 0:
+		GameObject::update(0.0, 0.0);
+		break;
+	case 1:
+		t = t + dt;
+		if (t >= tick_time) {
+			set_current_idx(++current_element);
 			GameObject::update(0.0, 0.0);
-			break;
-		case 1:
-			t = t + dt;
-			if (t >= tick_time) {
-				set_current_idx(++current_element);
-				GameObject::update(0.0, 0.0);
-				t = 0;
-			}
-			break;
-		case -1:
-			t = t + dt;
-			if (t >= tick_time) {
-				set_current_idx(current_element - 1);
-				GameObject::update(0.0, 0.0);
-				t = 0;
-			}
-			break;
-		case 2:
-			if (active) {
-				set_current_idx(++current_element);
-				GameObject::update(0.0, 0.0);
-				active = false;
-			}
-			break;
-		case -2:
-			if (active) {
-				set_current_idx(current_element - 1);
-				GameObject::update(0.0, 0.0);
-				active = false;
-			}
-			break;
-		case 4:
-			t = t + dt;
-			if (t >= tick_time) {
-				if (hover) {
-					set_current_idx(++current_element);
-					GameObject::update(0.0, 0.0);
-					t = 0;
-				}
-			}
-			break;
-		case -4:
-			t = t + dt;
-			if (t >= tick_time) {
-				if (hover) {
-					set_current_idx(current_element - 1);
-					GameObject::update(0.0, 0.0);
-					t = 0;
-				}
-			}
-			break;
-		default:
-			GameObject::update(0.0, 0.0);
-			break;
+			t = 0;
 		}
+		break;
+	case -1:
+		t = t + dt;
+		if (t >= tick_time) {
+			set_current_idx(current_element - 1);
+			GameObject::update(0.0, 0.0);
+			t = 0;
+		}
+		break;
+	case 2:
+		if (active) {
+			set_current_idx(++current_element);
+			GameObject::update(0.0, 0.0);
+			active = false;
+		}
+		break;
+	case -2:
+		if (active) {
+			set_current_idx(current_element - 1);
+			GameObject::update(0.0, 0.0);
+			active = false;
+		}
+		break;
+	case 4:
+		t = t + dt;
+		if (t >= tick_time) {
+			if (hover) {
+				set_current_idx(++current_element);
+				GameObject::update(0.0, 0.0);
+				t = 0;
+			}
+		}
+		break;
+	case -4:
+		t = t + dt;
+		if (t >= tick_time) {
+			if (hover) {
+				set_current_idx(current_element - 1);
+				GameObject::update(0.0, 0.0);
+				t = 0;
+			}
+		}
+		break;
+	default:
+		GameObject::update(0.0, 0.0);
+		break;
+	}
 }
 
 void sprite::render(SDL_Renderer* ren, const Camera& cam) const {
@@ -405,6 +428,7 @@ void sprite::render(SDL_Renderer* ren, const Camera& cam) const {
 	}
 }
 
-void sprite::action() {
+int sprite::action() {
 	active = true;
+	return -999;
 }

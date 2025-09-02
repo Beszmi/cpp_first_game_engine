@@ -125,9 +125,9 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	obj_container.spawn_as<sprite>("s1", "-", tex_mgr, 1.0f, true);
 
 	tex_mgr.create_text_texture("test1", "fonts/ARIAL.TTF", 72, "EPIC TESTING TEXT YEAH", Colors::white, Colors::black);
-	tex_mgr.set_text_border("test1", true, Colors::violet);
 
-	obj_container.spawn_as<Button>("test1", "test1", tex_mgr, 500, 500, 1.0f, true, 2);
+	obj_container.spawn_as<Text_Button>("test1", "test1", tex_mgr, 500, 500, 1.0f, true, 2);
+
 
 	sprite& cocacola = *obj_container.get<sprite>("s1");
 
@@ -260,7 +260,7 @@ void Game::handleEvents() {
 
 void Game::update(double dtSeconds) {
 	//cnt++;
-	obj_container.update_all(dtSeconds);
+	obj_container.update_all(dtSeconds, 400);
 }
 
 void Game::render() {

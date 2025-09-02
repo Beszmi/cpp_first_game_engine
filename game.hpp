@@ -37,6 +37,7 @@ public:
 
 	void init(const char *title, int xpos, int ypos, int width, int height, bool fullscreen);
 	void set_cursors(SDL_Cursor* default_cursor_in, SDL_Cursor* pointer_cursor_in);
+	float get_scaling() { return screen_scale_factor; }
 	void handleEvents();
 	void update(double dtSeconds);
 	void render();

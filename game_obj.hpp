@@ -130,7 +130,7 @@ public:
 
 //Game object cluster -----------------------------------------------------------------------------------
 
-class GameObject_cluster : public GameObject {
+class GameObject_cluster: public GameObject {
 	std::vector<std::unique_ptr<GameObject>> items;
 public:
 	using GameObject::GameObject;
@@ -168,6 +168,7 @@ public:
 
 class Text_Button : public Button {
 	texture_manager& tex_mgr;
+	SDL_Color default_bg_color;
 public:
 	Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, float scale = 1.0f, bool show_it = false, int layer_in = 0, int variable = 0);
 	Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, int x, int y, float scale = 1.0f, bool show_it = false, int layer_in = 0, int variable = 0);
@@ -179,6 +180,8 @@ public:
 	void update(double dt, double speed = 400) override;
 	void on_hover_enter(SDL_Cursor* pointer_cursor) override;
 	void on_hover_exit(SDL_Cursor* default_cursor) override;
+	void set_text(const std::string& new_text);
+	void set_background(bool enabled, SDL_Color color);
 
 	~Text_Button() = default;
 };
@@ -204,7 +207,7 @@ public:
 
 class sprite : public GameObject {
 	std::vector<std::unique_ptr<sprite_component>> elements;
-	int state = -4; //states in docs
+	int state = 1; //states in docs
 	int current_element = 0;
 	double t = 0;
 	double tick_time = 0.25;

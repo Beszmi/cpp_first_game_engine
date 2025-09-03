@@ -1,7 +1,7 @@
 #include "game_obj.hpp"
 
 //BASE OBJECT
-GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, float scale, bool show_it, int layer_in) : name(name), scale(scale), show(show_it), obj_tex(nullptr), layer(layer_in) {
+GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, float scale, bool show_it, int layer_in): name(name), scale(scale), show(show_it), obj_tex(nullptr), layer(layer_in) {
 	if (texture != "-") {
 		obj_tex = tex_mgr.get_texture(texture);
 		if (!obj_tex) {
@@ -31,7 +31,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), w, h };
 }
 
-GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, float scale, bool show_it, int layer_in) : name(name), scale(scale), show(show_it), obj_tex(nullptr), layer(layer_in) {
+GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, GameObject_cluster* prn, float scale, bool show_it, int layer_in): name(name), scale(scale), show(show_it), obj_tex(nullptr), layer(layer_in) {
 	if (texture != "-") {
 		obj_tex = tex_mgr.get_texture(texture);
 		if (!obj_tex) {
@@ -48,7 +48,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), w, h };
 }
 
-GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, float scale, bool show_it, int layer_in) : name(name), scale(scale), show(show_it), obj_tex(nullptr), layer(layer_in) {
+GameObject::GameObject(const std::string& name, const std::string& texture, const texture_manager& tex_mgr, int x, int y, GameObject_cluster* prn, float scale, bool show_it, int layer_in): name(name), scale(scale), show(show_it), obj_tex(nullptr), layer(layer_in) {
 	if (texture != "-") {
 		obj_tex = tex_mgr.get_texture(texture);
 		if (!obj_tex) {
@@ -62,7 +62,7 @@ GameObject::GameObject(const std::string& name, const std::string& texture, cons
 	if (obj_tex) SDL_GetTextureSize(obj_tex, &w, &h);
 	transform.computeWorld();
 	src_rect = { 0, 0, w, h };
-	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), w, h };
+	dst_rect = { (float)round(transform.worldX), (float)round(transform.worldY), w, h};
 }
 
 GameObject::GameObject(const GameObject& rhs) : name(rhs.name), obj_tex(rhs.obj_tex), transform(rhs.transform), src_rect(rhs.src_rect), dst_rect(rhs.dst_rect), scale(rhs.scale), show(rhs.show), layer(rhs.layer) {}
@@ -73,7 +73,7 @@ void GameObject::set_dst_rect(double x, double y) {
 }
 
 void GameObject::update(double dt, double speed) {
-	set_loc_position(transform.localX + (speed * dt), transform.localY + (speed * dt));
+	//set_loc_position(transform.localX + (speed * dt), transform.localY + (speed * dt));
 	transform.computeWorld();
 	dst_rect.x = static_cast<float>(std::lround(transform.worldX));
 	dst_rect.y = static_cast<float>(std::lround(transform.worldY));
@@ -205,9 +205,8 @@ void GameObject_cluster::add_item_world(const GameObject& obj_in, bool show_in_c
 }
 
 void GameObject_cluster::update(double dt, double speed) {
-	speed = 150;
 	get_transform()->computeWorld();
-	GameObject::update(dt, speed);
+	GameObject::update(0, 0);
 
 	for (auto& c : items) {
 		c->update(dt, 0);
@@ -216,6 +215,7 @@ void GameObject_cluster::update(double dt, double speed) {
 
 void GameObject_cluster::render(SDL_Renderer* ren, const Camera& cam) const {
 	//render self
+	if (!does_show()) return;
 	GameObject::render(ren, cam);
 	if (SDL_GetError()[0] != '\0') {
 		SDL_Log("[SDL] RenderCopy (cluster) error: %s", SDL_GetError());
@@ -245,41 +245,97 @@ void Button::on_hover_exit(SDL_Cursor* default_cursor) {
 // TEXT BUTTONS
 
 Text_Button::Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, float scale, bool show_it, int layer_in, int variable)
-	: Button(name, texture, tex_mgr_in, scale, show_it, layer_in), tex_mgr(tex_mgr_in) {
+	: Button(name, texture, tex_mgr_in, scale, show_it, layer_in), tex_mgr(tex_mgr_in), default_bg_color(tex_mgr.get_bg_color(name)) {
 	var = variable;
 }
 
 Text_Button::Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, int x, int y, float scale, bool show_it, int layer_in, int variable)
-	: Button(name, texture, tex_mgr_in, x, y, scale, show_it, layer_in), tex_mgr(tex_mgr_in) {
+	: Button(name, texture, tex_mgr_in, x, y, scale, show_it, layer_in), tex_mgr(tex_mgr_in), default_bg_color(tex_mgr.get_bg_color(name)) {
 	var = variable;
 }
 
 Text_Button::Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, GameObject_cluster* prn, float scale, bool show_it, int layer_in, int variable)
-	: Button(name, texture, tex_mgr_in, prn, scale, show_it, layer_in), tex_mgr(tex_mgr_in) {
+	: Button(name, texture, tex_mgr_in, prn, scale, show_it, layer_in), tex_mgr(tex_mgr_in), default_bg_color(tex_mgr.get_bg_color(name)) {
 	var = variable;
 }
 
 Text_Button::Text_Button(const std::string& name, const std::string& texture, texture_manager& tex_mgr_in, int x, int y, GameObject_cluster* prn, float scale, bool show_it, int layer_in, int variable)
-	: Button(name, texture, tex_mgr_in, x, y, prn, scale, show_it, layer_in), tex_mgr(tex_mgr_in) {
+	: Button(name, texture, tex_mgr_in, x, y, prn, scale, show_it, layer_in), tex_mgr(tex_mgr_in), default_bg_color(tex_mgr.get_bg_color(name)) {
 	var = variable;
 }
 
 int Text_Button::action() {
-	if (var > -1 && var < 3) {
-		//return rps::play(var);
+	if (is_enabled()) {
+		return var;
 	}
-	return var;
 }
 
 void Text_Button::update(double dt, double speed) {
 	GameObject::update(0.0, 0.0);
+
+	SDL_Texture* latest = tex_mgr.get_texture(get_name());
+	if (latest != get_tex()) {
+		set_texture(latest);
+
+		float w = 0, h = 0;
+		if (latest) {
+			SDL_GetTextureSize(latest, &w, &h);
+		}
+		else {
+			w = h = 0;
+		}
+
+		get_src_rect() = { 0, 0, w, h };
+		auto& d = get_dst_rect();
+		d.w = w;
+		d.h = h;
+	}
 }
 
 void Text_Button::on_hover_enter(SDL_Cursor* pointer_cursor) {
-	hover = true;
-	SDL_SetCursor(pointer_cursor);
+	if (!hover) {
+		hover = true;
+		SDL_SetCursor(pointer_cursor);
+		SDL_Color new_color = tex_mgr.get_bg_color(get_name());
+		if (new_color.r != 0) {
+			new_color.r -= std::clamp(round(new_color.r * 0.25), -60.0, 60.0);
+		}
+		if (new_color.g != 0) {
+			new_color.g -= std::clamp(round(new_color.g * 0.25), -60.0, 60.0);
+		}
+		if (new_color.b != 0) {
+			new_color.b -= std::clamp(round(new_color.b * 0.25), -60.0, 60.0);
+		}
 
-	if (tex_mgr.set_text_background_const_padding(get_name(), true, Colors::grey)) {
+		if (tex_mgr.set_text_background_const_padding(get_name(), true, new_color)) {
+			if (auto* t = tex_mgr.get_texture(get_name())) {
+				set_texture(t);
+				float w = 0, h = 0; SDL_GetTextureSize(t, &w, &h);
+				get_src_rect() = { 0,0,w,h };
+				auto& d = get_dst_rect(); d.w = w; d.h = h;
+			}
+		}
+	}
+}
+
+void Text_Button::on_hover_exit(SDL_Cursor* default_cursor) {
+	if (hover) {
+		hover = false;
+		SDL_SetCursor(default_cursor);
+
+		if (tex_mgr.set_text_background_const_padding(get_name(), true, default_bg_color)) {
+			if (auto* t = tex_mgr.get_texture(get_name())) {
+				set_texture(t);
+				float w = 0, h = 0; SDL_GetTextureSize(t, &w, &h);
+				get_src_rect() = { 0,0,w,h };
+				auto& d = get_dst_rect(); d.w = w; d.h = h;
+			}
+		}
+	}
+}
+
+void Text_Button::set_text(const std::string& new_text) {
+	if (tex_mgr.set_text_string(get_name(), new_text)) {
 		if (auto* t = tex_mgr.get_texture(get_name())) {
 			set_texture(t);
 			float w = 0, h = 0; SDL_GetTextureSize(t, &w, &h);
@@ -289,11 +345,8 @@ void Text_Button::on_hover_enter(SDL_Cursor* pointer_cursor) {
 	}
 }
 
-void Text_Button::on_hover_exit(SDL_Cursor* default_cursor) {
-	hover = false;
-	SDL_SetCursor(default_cursor);
-
-	if (tex_mgr.set_text_background_const_padding(get_name(), true, Colors::light_grey)) {
+void Text_Button::set_background(bool enabled, SDL_Color color) {
+	if (tex_mgr.set_text_background_const_padding(get_name(), true, color)) {
 		if (auto* t = tex_mgr.get_texture(get_name())) {
 			set_texture(t);
 			float w = 0, h = 0; SDL_GetTextureSize(t, &w, &h);
@@ -354,67 +407,67 @@ void sprite::set_current_idx(int idx) {
 	if (idx >= static_cast<int>(elements.size())) idx = 0;
 	current_element = idx;
 }
-
+ 
 
 void sprite::update(double dt, double speed) {
-	switch (state) {
-	case 0:
-		GameObject::update(0.0, 0.0);
-		break;
-	case 1:
-		t = t + dt;
-		if (t >= tick_time) {
-			set_current_idx(++current_element);
+	switch (state){
+		case 0:
 			GameObject::update(0.0, 0.0);
-			t = 0;
-		}
-		break;
-	case -1:
-		t = t + dt;
-		if (t >= tick_time) {
-			set_current_idx(current_element - 1);
-			GameObject::update(0.0, 0.0);
-			t = 0;
-		}
-		break;
-	case 2:
-		if (active) {
-			set_current_idx(++current_element);
-			GameObject::update(0.0, 0.0);
-			active = false;
-		}
-		break;
-	case -2:
-		if (active) {
-			set_current_idx(current_element - 1);
-			GameObject::update(0.0, 0.0);
-			active = false;
-		}
-		break;
-	case 4:
-		t = t + dt;
-		if (t >= tick_time) {
-			if (hover) {
+			break;
+		case 1:
+			t = t + dt;
+			if (t >= tick_time) {
 				set_current_idx(++current_element);
 				GameObject::update(0.0, 0.0);
 				t = 0;
 			}
-		}
-		break;
-	case -4:
-		t = t + dt;
-		if (t >= tick_time) {
-			if (hover) {
+			break;
+		case -1:
+			t = t + dt;
+			if (t >= tick_time) {
 				set_current_idx(current_element - 1);
 				GameObject::update(0.0, 0.0);
 				t = 0;
 			}
+			break;
+		case 2:
+			if (active) {
+				set_current_idx(++current_element);
+				GameObject::update(0.0, 0.0);
+				active = false;
+			}
+			break;
+		case -2:
+			if (active) {
+				set_current_idx(current_element - 1);
+				GameObject::update(0.0, 0.0);
+				active = false;
+			}
+			break;
+		case 4:
+			t = t + dt;
+			if (t >= tick_time) {
+				if (hover) {
+					set_current_idx(++current_element);
+					GameObject::update(0.0, 0.0);
+					t = 0;
+				}
+			}
+			break;
+		case -4:
+			t = t + dt;
+			if (t >= tick_time) {
+				if (hover) {
+					set_current_idx(current_element - 1);
+					GameObject::update(0.0, 0.0);
+					t = 0;
+				}
+			}
+			break;
+		default:
+			GameObject::update(0.0, 0.0);
+			break;
 		}
-		break;
-	default:
-		GameObject::update(0.0, 0.0);
-		break;
-	}
 }
 
 void sprite::render(SDL_Renderer* ren, const Camera& cam) const {
